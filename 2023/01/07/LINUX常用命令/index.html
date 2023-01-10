@@ -1,0 +1,547 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>linxu 常用命令 | DDUP</title><meta name="author" content="sunk"><meta name="copyright" content="sunk"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="文件与目录操作命令1.1文件内容查询命令grep、fgrep、egrep 语法：grep[选项][查找模式][文件名1，文件名2,⋯⋯] 选项： -E 每个模式作为一个扩展的正则表达式对待 -F 每个模式作为一组固定字符串对待，而不作为正则表达式 -i 比较时不区分大小写 -l 显示首次匹配匹配串所在的文件名并用换行符将其分开。当在文件中多次出现匹配串时，不重复显示次文件名；  -x 只显示整行严">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linxu 常用命令">
+<meta property="og:url" content="http://185.199.111.153/2023/01/07/LINUX%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/index.html">
+<meta property="og:site_name" content="DDUP">
+<meta property="og:description" content="文件与目录操作命令1.1文件内容查询命令grep、fgrep、egrep 语法：grep[选项][查找模式][文件名1，文件名2,⋯⋯] 选项： -E 每个模式作为一个扩展的正则表达式对待 -F 每个模式作为一组固定字符串对待，而不作为正则表达式 -i 比较时不区分大小写 -l 显示首次匹配匹配串所在的文件名并用换行符将其分开。当在文件中多次出现匹配串时，不重复显示次文件名；  -x 只显示整行严">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://185.199.111.153/img/page02.jpg">
+<meta property="article:published_time" content="2023-01-07T11:12:20.000Z">
+<meta property="article:modified_time" content="2023-01-10T08:13:10.522Z">
+<meta property="article:author" content="sunk">
+<meta property="article:tag" content="LINUX">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://185.199.111.153/img/page02.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://185.199.111.153/2023/01/07/LINUX%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: true,
+    post: true
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'linxu 常用命令',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-01-10 16:13:10'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">4</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">2</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/page02.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="DDUP"><span class="site-name">DDUP</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">linxu 常用命令</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-01-07T11:12:20.000Z" title="发表于 2023-01-07 19:12:20">2023-01-07</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-01-10T08:13:10.522Z" title="更新于 2023-01-10 16:13:10">2023-01-10</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/linux/">linux</a></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="文件与目录操作命令"><a href="#文件与目录操作命令" class="headerlink" title="文件与目录操作命令"></a>文件与目录操作命令</h1><h2 id="1-1文件内容查询命令"><a href="#1-1文件内容查询命令" class="headerlink" title="1.1文件内容查询命令"></a>1.1文件内容查询命令</h2><pre><code>grep、fgrep、egrep
+语法：grep[选项][查找模式][文件名1，文件名2,⋯⋯]
+选项： -E 每个模式作为一个扩展的正则表达式对待
+-F 每个模式作为一组固定字符串对待，而不作为正则表达式
+-i 比较时不区分大小写
+-l 显示首次匹配匹配串所在的文件名并用换行符将其分开。当在文件中多次出现匹配串时，不重复显示次文件名；
+
+-x 只显示整行严格匹配的行
+</code></pre>
+<h2 id="1-2文件查找命令-find、locate"><a href="#1-2文件查找命令-find、locate" class="headerlink" title="1.2文件查找命令 find、locate"></a>1.2文件查找命令 find、locate</h2><pre><code>语法：find 起始目录 寻找条件 操作
+以名称和文件属性查找
+-name‘字串‘ 查找文件名匹配所给字串的所有文件，字串内可用通配符、？、[]。
+-lname‘字串‘ 查找文件名匹配所给字串的所有符号链接文件，字串内可用通配符、？、[]。
+-gid n 查找属于ID号为n的用户组的所有文件。
+-uid n 查找属于ID号为n的用户的所有文件。
+-group‘字串‘ 查找属于用户组名为所给字串的所有的文件。
+-user‘字串‘ 查找属于用户名为所给字串的所有的文件。
+-path‘字串‘ 查找路径名匹配所给字串的所有文件，字串内可用通配符*、？、[]。
+
+-perm 权限 查找具有指定权限的文件和目录，权限的表示可以如711、644。
+-type x 查找类型为 x的文件，
+语法：locate 相关字
+</code></pre>
+<h2 id="1-3文件的复制、删除和移动命令"><a href="#1-3文件的复制、删除和移动命令" class="headerlink" title="1.3文件的复制、删除和移动命令"></a>1.3文件的复制、删除和移动命令</h2><pre><code>文件复制命令cp [选项] 源文件或目录 目标文件或目录
+选项：- a 通常在拷贝目录时使用
+-d 拷贝时保留连接
+-f 删除已经存在的目标文件而不提示
+-i 和f选项相反
+-p 此时cp除复制源文件内容外，还将其修改的时间和访问权限也复制到新文件中
+-r 若给出的源文件是一目录文件，此时cp将递归复制该目录下的所有的子目录和文件，此时目标文件必须为一个目录名；
+-l 不作拷贝，只是链接文件
+文件移动命令 mv[选项] 源文件或目录 目标文件或目录
+-i 交互式操作
+-f 禁止交互式操作
+文件删除命令 rm[选项] 文件⋯
+-f 忽略不存在的文件，从不给出提示
+-r 指示rm将参数中列出的全部目录和子目录均递归地删除
+-i 进行交互式删除
+</code></pre>
+<h2 id="1-4文件链接命令"><a href="#1-4文件链接命令" class="headerlink" title="1.4文件链接命令"></a>1.4文件链接命令</h2><pre><code>ln [选项] 目标 [链接名] 或 ln [选项] 目标 目录
+选项：- s 建立符号链接
+</code></pre>
+<h2 id="1-5目录的创建和删除命令"><a href="#1-5目录的创建和删除命令" class="headerlink" title="1.5目录的创建和删除命令"></a>1.5目录的创建和删除命令</h2><pre><code>mkdir 创建一个目录
+语法：mkdir [选项] dirname
+选项：- m 对新建目录设置存取权限
+-p 可以是一个路径名称。此时若路径中的某些目录尚不存在，加上此选项后，系统将自动建立好那些尚不存在的目录，即一次可以建立多个目录。
+
+rmdir 删除空目录
+语法：rmdir [选项] dirname
+选项： - p 递归删除目录dirname,当子目录删除后其父目录为空时，也一同被删除。
+</code></pre>
+<h2 id="1-6改变工作目录，显示目录内容命令"><a href="#1-6改变工作目录，显示目录内容命令" class="headerlink" title="1.6改变工作目录，显示目录内容命令"></a>1.6改变工作目录，显示目录内容命令</h2><pre><code>1、改变工作目录：cd [directory]
+2、显示当前工作的目录的绝对路径： pwd
+3、显示目录内容：ls [选项] [目录或是文件]
+选项：- a 显示指定目录下所有子目录与文件，包括隐藏文件；
+-c 按照文件的修改时间排序
+-C 分成多列显示各项
+-d 如果参数是目录，只显示其名称而不显示其下的个文件
+-F 在目录名后面标记“/”，可执行文件后面标记“*”，符号链接后面标记“@”，管道（或FIFO）后面标记“|”，socket文件后面标记“=”。
+-l 以长格式来显示文件的详细信息
+
+-L 若指定的名称为一个符号链接，则显示链接所指向的文件
+-t 显示时按修改时间而不是名字排序
+-u 显示时按文件上次存取的时间而不是名字排序
+4、改变文件或目录的访问权限命令
+chmod [who] [+| - | = ] [mode] 文件名？
+Who选项：
+
+u表示用户，即文件和目录的所有者
+-g表示同组用户
+-o（other）表示其他用户
+-a （all）表示所有用户
+操作符号：
+添加某个权限 - 取消某个权限
+= 赋予给定权限并取消其他所有的权限（如果有的话）
+mode 选项：
+r 可读
+-w 可写
+-x 可执行
+chgrp [-R] group filename? 改变目录或文件所属的组
+chown [-Rv] 用户或组 文件
+</code></pre>
+<h2 id="1-7备份与压缩命令"><a href="#1-7备份与压缩命令" class="headerlink" title="1.7备份与压缩命令"></a>1.7备份与压缩命令</h2><pre><code>1、tar命令 为文件和目录创建档案
+语法：tar [主选项+辅助选项] 文件或者目录
+u 主选项
+c 创建新的档案文件。如果用户想备份一个目录或是一些文件，则选此项
+r 把要存档的文件追加到档案文件的末尾
+t 列出档案文件的内容，查看已经备份了哪些文件；
+u 更新文件
+x 从档案文件中释放文件；
+u 辅助选项
+b 该选项为磁带机设定的，其后跟一位数字，用来说明区块的大小，系统预设值为
+f 使用档案文件或设备，这个选项通常是必选的
+k 保存已经存在的文件。例如把某个文件还原，在还原的过程中，遇到相同的文件，不会进行覆盖；
+m 在还原文件时，把所有文件的修改时间设定为现在；
+M 创建多卷的档案文件，以便在几个磁盘中存放；
+v 详细报告tar处理的文件信息
+w 每一步都要求确认
+z 用gzip来压缩/解压缩文件
+2、gzip命令 压缩/解压缩命令
+语法：gzip [选项] 压缩（解压缩）的文件名
+选项：-c 将输出写到标准输出上，并保留原有文件
+-d 将压缩文件解压
+
+-l 显示每个压缩文件的详细信息
+-r 递归式地查找指定目录并压缩其中的所有文件或者是解压缩
+-t 测试、检查压缩文件是否完整
+-v 对每一个压缩和解压的文件，显示文件名和压缩比
+3、unzip 命令
+用MS windows下的压缩软件winzip压缩的文件在linux系统下展开
+语法：unzip [选项] 压缩文件名.zip
+选项： -x 文件列表 解压缩文件，但不包括指定的file文件
+-v 查看压缩文件目录，但不解压
+-t 测试文件有无损坏 ，但不解压
+-d 目录 将压缩文件解到指定目录下
+-z 只显示压缩文件的注解
+-n 不覆盖已经存在的文件
+-o 覆盖已经存在的文件且不要求用户确认
+-j 不重建文档的目录结构，把所有文件解压到同一目录下
+</code></pre>
+<h2 id="1-8在LINUX环境下运行DOS命令"><a href="#1-8在LINUX环境下运行DOS命令" class="headerlink" title="1.8在LINUX环境下运行DOS命令"></a>1.8在LINUX环境下运行DOS命令</h2><pre><code>linux系统提供了一组称为mtools的可移植工具，可以让用户轻松地从标准的DOS软盘上读写文件和目录。
+
+mcd 目录名 改变MSDOS目录
+mcopy 源文件 目标文件 在MSDOS和UNIX之间复制文件；
+mdel 目录名 删除MSDOS目录
+
+mdir 目录名 显示MSDOS目录
+mformat 驱动器号 在低级格式化的软盘上创建MSDOS文件系统
+rnlabel 驱动器号 产生MSDOS卷标
+mmd 目录名 删除MSDOS目录
+mren 源文件 目标文件 重新命名已存在的MSDOS文件
+mtype 文件名 显示MSDOS文件的内容
+</code></pre>
+<h1 id="2-设备管理命令"><a href="#2-设备管理命令" class="headerlink" title="2 设备管理命令"></a>2 设备管理命令</h1><pre><code>linux采用下面的形式定义一个IDE硬盘：/dev/hd[drive][partition]
+SCSI硬盘使用同样的机制表示： /dev/sd[drive][partition]
+对于一般的LINUX分区，可以用mkfs将其格式化并生成文件系统，命令如下：
+mk2fs –c
+装载文件系统：mount –t ext2 [-o optioms] partition mountpiont
+其中，-t为指定装载文件系统的类型；-o指定一些选项，如只读ro，可读可写rw等等；partition定义分区名称；mountpiont定义文件系统被装载的目录名称。
+
+装载CD-ROM文件系统：mount –t iso9660 –r /dev/cdrom /mnt/cdrom
+装载软驱文件系统： mount –t msdos –rw /dev/fd0 /dev/mnt/floppy
+卸载文件系统 umount /mnt/cdrom
+磁带设备的安装要注意以下几点：
+1、 首先要选择一个唯一的SCSI ID号，然后再将设备链接到适当的位置
+2、 选择驱动程序。
+3、（不支持回绕的磁带设备）或/dev/nst0（支持回绕的磁带设备） 生成设备文件。SCSI磁带设备的主要设备号是9，次要设备号是0。设备文件名通常是/dev/nrst
+
+用 ls /dev/*rst*
+检查磁带设备文件是否存在，如果不存在，用
+mknod –m 666 /dev/nrst0 c 9 9
+mknod –m 666 /dev/rst0 c 9 0 生成
+4、 可以对块长度、缓存、磁带密度等参数进行一些设置，例如
+mt setblk 20 将块长度指定为
+mt setblk 0 指定块程度没有限制
+5、下类似的信息： 通过检查系统的启动信息可以确定系统是否识别了新的磁带设备。用dmesg命令，查看是否有以
+aha274x:target 4now synchronous at 4.4Mb/s
+Vendor:TANDBERG Model:TDC 3800 Rev: =05:
+Type: Sequential-Access ANSI SCSI revision: 02
+Detected scsi tape st0 at scsi0, id4, lun
+Scsi : detected 1 SCSI tape 1 SCSI crom 1 SCSI disk total
+</code></pre>
+<h1 id="3-软件包管理命令"><a href="#3-软件包管理命令" class="headerlink" title="3 软件包管理命令"></a>3 软件包管理命令</h1><h2 id="3-1软件安装的步骤"><a href="#3-1软件安装的步骤" class="headerlink" title="3.1软件安装的步骤"></a>3.1软件安装的步骤</h2><pre><code>在LINUX系统上安装软件的步骤有：
+1、 查找所要安装软件的源文件
+2、 把源文件解开放到一个目录中，命令如下：
+tar zxvf &lt;源文件名&gt;
+3、动配置工具，如./configure 针对本操作系统配置源文件。可以是编辑make文件或其他文件，也可能是运行该软件自带的自
+4、 make源文件，通常是运行make命令，即执行 make
+5、 安装二进制文件和其他支撑文件，运行命令： make install
+6、 最后，完成所有其他必须的配置
+</code></pre>
+<h2 id="3-2软件包管理命令"><a href="#3-2软件包管理命令" class="headerlink" title="3.2软件包管理命令"></a>3.2软件包管理命令</h2><pre><code>rpm –ivh &lt;软件包&gt;
+// 安装指定的软件包，并在安装过程中用#表示安装的进度
+rpm –Uvh &lt;软件包&gt;
+// 更新一个已经存在的或还没安装好的软件包，并删除所有该软件包的旧版本。
+rpm –e
+//卸载一个rpm软件包
+rpm –qa
+// 查看系统中已经安装的软件包
+rpm –q &lt;软件包&gt;
+// 查看系统中某个软件包的版本号；
+rpm –qlp &lt;软件包&gt;
+//列出某个软件包中的所有文件
+rpm –qf &lt;软件包&gt;
+//找出一个文件属于哪个软件包
+</code></pre>
+<h1 id="4-LINUX系统常用命令"><a href="#4-LINUX系统常用命令" class="headerlink" title="4 LINUX系统常用命令"></a>4 LINUX系统常用命令</h1><h2 id="4-1-与系统管理有关的命令"><a href="#4-1-与系统管理有关的命令" class="headerlink" title="4.1 与系统管理有关的命令"></a>4.1 与系统管理有关的命令</h2><pre><code>Wall (Write All)对全部已 登录的用户发送信息，用户可以先反要发送的信息写好存入一个文件中，然后输入：# wall &lt;
+FileName例：Wall ‘Thank you !’
+
+Write向某一用户发送信息。
+Write xxqhello
+
+输入Ctrl+C组合即可终止
+Shutdown命令Shutdown [选项] [时间] [警告信息]
+-k 并不真正关机，而只是发出警告信息给所有的用户。-r 关机后立即重新启动。
+-h 关机后不重新启动。-f 快速关机，启动时跳过fsck。
+-n快速关机，不经过init程序。-c 取消一个已经运行的shutdown
+例：系统马上关机：Shutdown –h now
+Free命令查看当前系统内存的使用情况，
+Free [-b] [-k] [-m]-b 以字节为单位显示。
+-k 以K字节为单位显示。-m 以M字节为单位显示。
+
+Uptime显示系统已经运行了多长的时间：现在时间、系统已经运行的时间、目前有多少登录用户、系统在过去
+的1分钟、5分钟和15分钟内的平均负载。
+</code></pre>
+<h2 id="4-2与用户有关的命令"><a href="#4-2与用户有关的命令" class="headerlink" title="4.2与用户有关的命令"></a>4.2与用户有关的命令</h2><pre><code>Passwd命令设置、更换用户口令。
+Passwd [用户名]
+Su使一个普通的用户具有超级用户的权利，离开可用EXIT命令。
+</code></pre>
+<h2 id="4-3其它命令"><a href="#4-3其它命令" class="headerlink" title="4.3其它命令"></a>4.3其它命令</h2><pre><code>Echo命令在显示器上显示一段文字，一般起到一个提示的作用。
+echo [-n] 字符串
+Cal命令显示某年某月的日历。
+cal [选项] [月[年]]选项的含义：
+-j 显示也给定月中的每一天是一年中的和几天（从1月1日算起）。-y 显示也整年的日历。
+
+Date命令date命令的功能是显示和设置系统日期和时间。
+</code></pre>
+<h2 id="4-4磁盘管理"><a href="#4-4磁盘管理" class="headerlink" title="4.4磁盘管理"></a>4.4磁盘管理</h2><pre><code>磁盘空间管理
+df命令检查文件系统的磁盘空间占用局部。
+Df [选项]-a 显示所有文件系统的磁盘使用情况，包括0块（block）的文件系统，如/proc文件系统。
+-k 以K字节为单位显示。-i 显示i节点信息，而不是磁盘块。
+
+t 显示各指定类型的文件系统的磁盘空间使用情况。-x 列出不是某一指定类型文件系统的磁盘窨使用情况（与t相反）。
+-T 显示文件系统类型。
+du命令du的英文原意为disk usage，含义为显示磁盘空间的使用情况。功能是统计目录（或文件）所占磁盘空间
+的大小。du [选项] [Names⋯]
+-s 对每人Names 参数只给也占用的数据块总数。-a 递归地显示指定目录中各文件用子孙目录中的各文件占用的数据块总数。
+-b 以字节为单位列也磁盘窨使用情部（缺省以K字节为单位）-k 以1024字节为单位列也磁盘空间使用情况。
+-c 最后再加上一个总计（系统缺省）-l 计算所有的文件大小，对硬链接文件，则计算多次。
+-x 跳过在不同文件系统上的目录不予统计。
+dd命令把指定的输入文件拷贝到指定的输出文件中，并且在拷贝的过程中可以进行格式转换。语法：
+dd　［选项］if =输入文件（或设备名称）。
+of =输出文件（或设备名称）。ibs = bytes 一次读取bytes字节，即读入缓冲区的字节数。
+skip = blocks 跳过读入缓冲区开头的ibs*blocks块。obs = bytes 一次写入bytes字节，即写 入缓冲区的字节数。
+bs = bytes 同时设置读/写缓冲区的字节数（等于设置obs和obs）。cbs = bytes 一次转换bytes字节。
+count = blocks 只拷贝输入的blocks块。conv = ASCII 把EBCDIC码转换为ASCII码。
+conv = ebcdic 把ASCII码转换为EBCDIC码。conv = ibm 把ASCII码转换为alternate EBCDIC码。
+conv = blick 把变动位转换成固定字符。conv = ublock 把固定们转换成变动位
+conv = ucase 把字母由小写变为大写。conv = lcase 把字母由大写变为小写。
+conv = notrunc 不截短输出文件。conv = swab 交换每一对输入字节。
+conv = noerror 出错时不停止处理。conv = sync 把每个输入记录的大小都调到ibs的大小（用ibs填充）。
+
+fdformat命令低级格式化软盘。
+format [-n] device-n 格式化后不做检验。
+</code></pre>
+<h2 id="4-5常用的网络命令"><a href="#4-5常用的网络命令" class="headerlink" title="4.5常用的网络命令"></a>4.5常用的网络命令</h2><pre><code>FTP命令
+Telnet命令。
+Netstat命令-a 显示所有的scoket，包括正在监听和。
+-c 每隔1秒就重新显示一遍，直到用户中断它。-i 显示所有网络接口的信息，格式同”ifconfig –e”
+-n 以网络IP地址代替名称，显示也网络连接情形。-r 显示核心路由表，格式同”route –e:。
+-t 显示TCP协议的连接情况。-u 显示UDP协议的连接情况。
+-v 显示正在进行的工作。
+
+nslookup命令。
+finger命令，功能是查询用户的信息。
+ping命令。
+（用户和组的管理可以使用工具：TurboUserCfg或是XturboUserCfg。）
+</code></pre>
+<h2 id="4-6有关进程的命令。"><a href="#4-6有关进程的命令。" class="headerlink" title="4.6有关进程的命令。"></a>4.6有关进程的命令。</h2><pre><code>进程和启动
+at [-V] [-q] [-f文件名] [-mldbv]时间at –c 作业 [作业⋯.]
+AT命令启动的进程系统只执行一次。
+batch [-V] [-q 队列] [-f 文件名] [-mv] [时间]在系统负载较小时，资源比较空闲时执行。
+
+cron命令按一定的时间间隔执行命令。
+
+crontab命令用于安装、删除或列出用于驱支cron后台进程的表格。
+
+进程查看
+who命令。
+w命令是一个比who命令更强大的命令
+w –[husfV] [user]-h 不显示标题。
+-u 当列出当前进程和CPU时间时忽略用户名。-s 使用短模式。不显示登录时间JCPU和PCPU时间。
+-f 切换显示FROM项，也就是远程主机名项。-V 显示版本信息。
+user 只显示指定用户的情况。
+ps命令。-e 显示所有进程。
+-f 全格式
+
+-h 不显示标题。-l 长格式。
+-w 宽输出。a 显示终端上所有进程，包括其他用户的进程。
+r 只显示正在运行的进程。x 显示没有控制终端的进程。
+
+top 命令动态显示系统当前的进程和其他状况。
+</code></pre>
+<h1 id="5系统的启动过程。"><a href="#5系统的启动过程。" class="headerlink" title="5系统的启动过程。"></a>5系统的启动过程。</h1><h2 id="5-1初始启动"><a href="#5-1初始启动" class="headerlink" title="5.1初始启动"></a>5.1初始启动</h2><pre><code>在PC机启动时，BIOS从指定的启动设备中读入“主引导记录”（MBR）。MBR的格式是：
+地址偏移量 内容 大小
++00 h 可执行的代码（启动模块） 可能变化
++1BE h 第一分区表项 16字节
++1CE h 第二分区表项 16字节
++1DE h 第三分区表项 16字节
++1EE h 第四分区表项 16字节
++1FE h 可执行的标记（AA55 h） 2字节
+启动模块包含足以装入操作系统的代码，或者是第二步的加载代码的位置。启动模块需要使用BIOS调用来从磁盘装入数据，而这些中断调用，如INT 13h等，限制了最大磁盘柱面号为1023。这也就是说启
+动模块需要加载的一切内容，如初始内存磁盘、内核、启动的时间信息等，必须存放在1024个柱面以内。
+
+在MBR中只有四个分区表项，每个表项的格式如下：
+
+地址偏移 内容 大小
++00h 分区状态：00代表非启动分区，80h代表启动分区 1字节
++01h 分区的起始位置 磁头 1字节
++02h 分区的起始位置 柱面和扇区 1字节
++04h 分区的类型 1字节
++05h 分区的结束位置 磁头 1字节
++06h 分区的结束位置 柱面和扇区 1字节
++08h 在主引导区和本分区的第一个扇区间的扇区数目 4字节
++0Ch 分区内的扇区数目 4字节
+</code></pre>
+<h2 id="5-2-Linux的启动过程"><a href="#5-2-Linux的启动过程" class="headerlink" title="5.2 Linux的启动过程"></a>5.2 Linux的启动过程</h2><pre><code>1启动的命令行参数
+在Linux启动时，它处理所有传递给它的命令行参数。这可以影响Linux的运行方式。命令行参数包括：
+mem=xxxM：定Linux可以使用的内存大小。这在用户的计算机系统有超过64MB的内存时才需要。因为从前的主板只对第一个64MB内存进行缓存，使用超过64MB的内存会使整个计算机的性能下降，所有内
+存均按无缓存的速度运行。
+single：使Linux按单用户方式启动，缺省方式是多用户方式。
+root=/dev/xxx：指定Linux要安装为根文件系统的设备。
+init=：指定作为初始化进程的文件。
+initrd=：指定作为初始内存磁盘的设备。
+ro：指定根文件系统为只读。
+rw：指定根文件系统为可读可写。
+
+2 Init进程在内核初始化自身和找到的硬件设备后，在后台启动进程init(/sbin/init)，init进程号1运行。
+在UNIX世界中有许多启动过程的版本，一些是基于系统V，一些是基于BSD。大多数Linux版本使用系统V的实现方法，在这里描述的就是这样。
+init是由文件/etc/inittab内容和功能控制的，随启动模式是单用户或多用户而不同。
+单用户模式：init进程忽略/etc/inittab文件，在执行少数几个脚本程序后调用/dev/console shell。这样，用户就可以有了一个shell，而且可以执行一定限度的任务。
+
+多用户模式：init进程把系统带入/etc/inittab文件指定的运行级别。Init通过标准的Linux方法进入一个指定的进行级别。
+
+3．进行级别
+Linux与其他UNIX操作系统一样，可以任何时刻处于任何一个运行级别。这些运行级别提供的功能不同，为主要是由于其运行的服务方程序（后台daemon）的不同造成的。Linux共有6种运行级别。
+
+0：关闭计算机或终止计算机运行，这个级别就是系统停止运行。
+1：单用户启动级别，系统只有一个用户，就是root，该用户在控制台登录。
+2：多用户运行级别，但无网络功能。在这个运行级别，网络功能没有启动，但是系统允许多个用户登录，可以通过虚拟控制台或串行线路。
+
+3：多用户模式，有网络功能。在这个运行级别，所有标准网络服务均被启动。
+4：目前没有实现。
+5：X11运行级别，在这个运行级别，X服务器软件运行，提供图形界面的登录方式。
+6：系统重新启动。
+查询当前运行级别：runlevel；
+
+4在启动过程中运行的脚本
+在init进程运行时，它负责查看缺省的运行级别，并进入该运行级别。这是通过运行在/etc/rc.d/rcX.d目录下的脚本程序来实现的，其中X代表运行的级别，即一个运行级别对应一个目录。不同的字母开头的
+文件有不同的作用。其中：
+
+以K开头的脚本程序是系统离开某个运行级别时执行的，作用是停止某种服务。当系统从某个支持级别变为其他级别时，首先要进行原运行级别所对应的所有K程序。
+以S开头的脚本程序是系统进入某个运行级别时所执行的，作用是启动某种服务。当系统改变为某个运行级别时，就要运行新运行级别所对应的所有S程序。
+5增加启动脚本程序
+用户可能有一些特定的硬件设备要初始化，或需要在系统启动时初始化一些其他应用程序，用户可以增加自己的初始化脚本程序来完成这些工作。通常步骤是：
+复制一个已经存在的脚本，这样可以得到一个通用的框架格式。
+修改这个脚本，以完成自己的需求，要注意使程序可以处理启动和关闭的参数，尽管可能关闭处理什么也不需要干。
+把这个肢本拷贝到/etc/rc.d/init.d目录下，命名为”serv”。
+按下面的方法在相应的目录下建立运行控制链接：ln –s ../init.d/serv/etc/rc.d/rc3.d/s99 serv
+
+进行测试。
+
+6 LILO和其他的启动模块
+要启动Linux，启动模块是必须的。一般用于Linux的启动模块是LILO，LILO用自己的主引导区代替一般的主引导区。LILO可以通过修改/etc/lilo.conf文件内容来进行配置，对引导区内容的更新通过lilo命令来
+完成。
+下面给也了一个装有DOS，TurboLinux3.4.0和RedHat 5.2系统的计算机的lilo.conf文件。在例子中的数字标号是用户加上去并要在文中详细解释的。
+
+[root@fred/root] # more /etc/lilo.confboot=dev/had
+map=/boot/mapinstll/boot/boot.b
+prompt表示启动盘是/dev/had，这是主IDE硬盘。
+
+timeout=50表示等待用户输入的时间是50秒。
+
+default=TL3.4other=dev/hda
+表示如果在上述的时间内没有输入，缺省的启动系统是TL3.4，即TurboLinux 3.4.
+label=dostable=dev/had
+表示如果在LILO提示用户输入启动系统时，用户按了键，各个系统将以label的内容显示出来，供用户选择。
+
+image=/mnt/tl3.4/boot/vmlinuzlabel=TL3.
+root=/dev/hda3read-only
+TurboLinux的启动文件，/mnt/tl3.4/boot/vmlinuz被确定，根文件系统在/dev/hda3，根文件系统是只读方式的。
+
+image=/mnt/rh5.2/boot/vmlinuz-2.0.36-0.7label=RH5.
+root=/dev/hda
+read-onlyRedHat的启动文件，/mnt/rh5.2/boot/vmlinuz-2.0,36-0.7被确定，根文件系统在/dev/hda4，根文件系统可
+读写。
+</code></pre>
+<h1 id="6-LINUX引导盘创建"><a href="#6-LINUX引导盘创建" class="headerlink" title="6 LINUX引导盘创建"></a>6 LINUX引导盘创建</h1><h2 id="6-1-在MS-Windows-9x-x2F-2000下创建引导盘"><a href="#6-1-在MS-Windows-9x-x2F-2000下创建引导盘" class="headerlink" title="6.1 在MS Windows 9x&#x2F;2000下创建引导盘"></a>6.1 在MS Windows 9x&#x2F;2000下创建引导盘</h2><pre><code>可以在MS Windows 9x/2000下创建引导盘，步骤如下：
+假定当前的CD-ROM驱动器是D：先将Red hat cd-rom盘放在驱动器内，在MS-DOS shell窗口中运行以下命令：
+
+d:/dosutils/rawrite
+2． rawrite实用程序将会立即显示如下提示信息：
+Enter disk image source file name:
+
+Please insert a formmated diskette into drive A: and press the enter key
+3．输入 images\boot.img 作为镜像源文件，现在 rawirte 会立即显示如下提示信息：
+Enter target diskette drive:
+4． 输入适当的驱动器名
+5．将格式化的空盘插入到软驱中，按回车键继续
+6．rawrite实用程序将把boot.img镜像到磁盘中，操作完毕；
+</code></pre>
+<h2 id="6-2-在LINUX下创建引导盘"><a href="#6-2-在LINUX下创建引导盘" class="headerlink" title="6.2 在LINUX下创建引导盘"></a>6.2 在LINUX下创建引导盘</h2><pre><code>步骤：
+根据常规装上REDHAT CD-ROM盘，这里假定已经把系统装在/mnt/cdrom目录下。现在应把当前目录更改成/mnt/cdrom/images，以便存放引导镜像文件；
+
+假定软驱是/dev/fd0，使用的是1.44 M软盘，运行以下命令：
+dd if=boot.img of=/dev/fd0 bs=1440k
+这样便创建了所需的引导盘。还可以创建辅助镜像软盘，只需把上面命令中的if=boot.img该成if=supp.img语句即可。
+</code></pre>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://185.199.111.153">sunk</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://185.199.111.153/2023/01/07/LINUX%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">http://185.199.111.153/2023/01/07/LINUX%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://185.199.111.153" target="_blank">DDUP</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/LINUX/">LINUX</a></div><div class="post_share"><div class="social-share" data-image="/img/page02.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/01/08/C++%E6%A0%B8%E5%BF%83%E7%BC%96%E7%A8%8B/" title="C++核心编程"><img class="cover" src="/img/girl01.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">C++核心编程</div></div></a></div><div class="next-post pull-right"><a href="/2023/01/07/hello-world/" title="Hello World"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Hello World</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">sunk</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">4</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">2</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/xxxxx" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:xxxxxx@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">好好学习 天天向上</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8E%E7%9B%AE%E5%BD%95%E6%93%8D%E4%BD%9C%E5%91%BD%E4%BB%A4"><span class="toc-number">1.</span> <span class="toc-text">文件与目录操作命令</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1%E6%96%87%E4%BB%B6%E5%86%85%E5%AE%B9%E6%9F%A5%E8%AF%A2%E5%91%BD%E4%BB%A4"><span class="toc-number">1.1.</span> <span class="toc-text">1.1文件内容查询命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2%E6%96%87%E4%BB%B6%E6%9F%A5%E6%89%BE%E5%91%BD%E4%BB%A4-find%E3%80%81locate"><span class="toc-number">1.2.</span> <span class="toc-text">1.2文件查找命令 find、locate</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3%E6%96%87%E4%BB%B6%E7%9A%84%E5%A4%8D%E5%88%B6%E3%80%81%E5%88%A0%E9%99%A4%E5%92%8C%E7%A7%BB%E5%8A%A8%E5%91%BD%E4%BB%A4"><span class="toc-number">1.3.</span> <span class="toc-text">1.3文件的复制、删除和移动命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-4%E6%96%87%E4%BB%B6%E9%93%BE%E6%8E%A5%E5%91%BD%E4%BB%A4"><span class="toc-number">1.4.</span> <span class="toc-text">1.4文件链接命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-5%E7%9B%AE%E5%BD%95%E7%9A%84%E5%88%9B%E5%BB%BA%E5%92%8C%E5%88%A0%E9%99%A4%E5%91%BD%E4%BB%A4"><span class="toc-number">1.5.</span> <span class="toc-text">1.5目录的创建和删除命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-6%E6%94%B9%E5%8F%98%E5%B7%A5%E4%BD%9C%E7%9B%AE%E5%BD%95%EF%BC%8C%E6%98%BE%E7%A4%BA%E7%9B%AE%E5%BD%95%E5%86%85%E5%AE%B9%E5%91%BD%E4%BB%A4"><span class="toc-number">1.6.</span> <span class="toc-text">1.6改变工作目录，显示目录内容命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-7%E5%A4%87%E4%BB%BD%E4%B8%8E%E5%8E%8B%E7%BC%A9%E5%91%BD%E4%BB%A4"><span class="toc-number">1.7.</span> <span class="toc-text">1.7备份与压缩命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-8%E5%9C%A8LINUX%E7%8E%AF%E5%A2%83%E4%B8%8B%E8%BF%90%E8%A1%8CDOS%E5%91%BD%E4%BB%A4"><span class="toc-number">1.8.</span> <span class="toc-text">1.8在LINUX环境下运行DOS命令</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E8%AE%BE%E5%A4%87%E7%AE%A1%E7%90%86%E5%91%BD%E4%BB%A4"><span class="toc-number">2.</span> <span class="toc-text">2 设备管理命令</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E8%BD%AF%E4%BB%B6%E5%8C%85%E7%AE%A1%E7%90%86%E5%91%BD%E4%BB%A4"><span class="toc-number">3.</span> <span class="toc-text">3 软件包管理命令</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85%E7%9A%84%E6%AD%A5%E9%AA%A4"><span class="toc-number">3.1.</span> <span class="toc-text">3.1软件安装的步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2%E8%BD%AF%E4%BB%B6%E5%8C%85%E7%AE%A1%E7%90%86%E5%91%BD%E4%BB%A4"><span class="toc-number">3.2.</span> <span class="toc-text">3.2软件包管理命令</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-LINUX%E7%B3%BB%E7%BB%9F%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="toc-number">4.</span> <span class="toc-text">4 LINUX系统常用命令</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-%E4%B8%8E%E7%B3%BB%E7%BB%9F%E7%AE%A1%E7%90%86%E6%9C%89%E5%85%B3%E7%9A%84%E5%91%BD%E4%BB%A4"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 与系统管理有关的命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2%E4%B8%8E%E7%94%A8%E6%88%B7%E6%9C%89%E5%85%B3%E7%9A%84%E5%91%BD%E4%BB%A4"><span class="toc-number">4.2.</span> <span class="toc-text">4.2与用户有关的命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-3%E5%85%B6%E5%AE%83%E5%91%BD%E4%BB%A4"><span class="toc-number">4.3.</span> <span class="toc-text">4.3其它命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-4%E7%A3%81%E7%9B%98%E7%AE%A1%E7%90%86"><span class="toc-number">4.4.</span> <span class="toc-text">4.4磁盘管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-5%E5%B8%B8%E7%94%A8%E7%9A%84%E7%BD%91%E7%BB%9C%E5%91%BD%E4%BB%A4"><span class="toc-number">4.5.</span> <span class="toc-text">4.5常用的网络命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-6%E6%9C%89%E5%85%B3%E8%BF%9B%E7%A8%8B%E7%9A%84%E5%91%BD%E4%BB%A4%E3%80%82"><span class="toc-number">4.6.</span> <span class="toc-text">4.6有关进程的命令。</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B%E3%80%82"><span class="toc-number">5.</span> <span class="toc-text">5系统的启动过程。</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#5-1%E5%88%9D%E5%A7%8B%E5%90%AF%E5%8A%A8"><span class="toc-number">5.1.</span> <span class="toc-text">5.1初始启动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-2-Linux%E7%9A%84%E5%90%AF%E5%8A%A8%E8%BF%87%E7%A8%8B"><span class="toc-number">5.2.</span> <span class="toc-text">5.2 Linux的启动过程</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-LINUX%E5%BC%95%E5%AF%BC%E7%9B%98%E5%88%9B%E5%BB%BA"><span class="toc-number">6.</span> <span class="toc-text">6 LINUX引导盘创建</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#6-1-%E5%9C%A8MS-Windows-9x-x2F-2000%E4%B8%8B%E5%88%9B%E5%BB%BA%E5%BC%95%E5%AF%BC%E7%9B%98"><span class="toc-number">6.1.</span> <span class="toc-text">6.1 在MS Windows 9x&#x2F;2000下创建引导盘</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-2-%E5%9C%A8LINUX%E4%B8%8B%E5%88%9B%E5%BB%BA%E5%BC%95%E5%AF%BC%E7%9B%98"><span class="toc-number">6.2.</span> <span class="toc-text">6.2 在LINUX下创建引导盘</span></a></li></ol></li></ol></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By sunk</div><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://butterfly.js.org/">blog</a>!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><div class="js-pjax"></div><script src="https://cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script><script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="false" data-click="true"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
