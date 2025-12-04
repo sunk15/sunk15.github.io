@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html><head>
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta charset="utf-8">
+<title>Toolbox Deluxe</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAATklEQVR4nGNgGGjAiEsiICDgPzJ/w4YNWNUyUeoCig1ggTH+9zCgODnwCKpCdHnGEoj3WRhwgPU2G4hyAfW8cHeZPolaL1LHBaMGDAYAAHdHDttLXc2JAAAAAElFTkSuQmCC">
+<style>
+
+  hr {
+    border: none;
+    border-top: 1px solid #D6D6F0;
+    margin: 16px 0;
+  }
+
+  body {
+    font-family: 'Carlito', 'Segoe UI', 'Liberation Sans', 'Arial', sans-serif;
+    font-size:larger;
+    background-color: white;
+    padding: 20px;
+  }
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  .info-box {
+	margin-top: 20px;
+  }
+  li { 
+	margin: 8px 0;
+	padding: 5px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	background: #ffffff;
+	border-radius: 5px;
+	border: 1px solid #C0D4F2;
+	box-shadow: 0 0 6px rgba(0, 0, 0, 0.06);
+  }
+  li:hover { 
+	background-color: #EDF2FA;
+  }
+  input, button { 
+	margin: 5px 5px 5px 0;
+	padding: 5px;
+  }
+  #language-selector {
+	margin-top:20px;
+  }
+  .icons { 
+	display: flex;
+	gap: 10px;
+  }
+  #list button {
+	background: none;
+    font-family: emoji;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  .input-group {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 5px;
+  }
+  
+  @media (max-width: 600px) {
+  body { font-size: medium; padding: 10px; }
+  .input-group { flex-direction: column; }
+  button, input { width: 100%; box-sizing: border-box; }
+  ul li { flex-direction: column; align-items: flex-start; }
+  .icons { justify-content: center; width: 100%; }
+  }
+  #editorModal {
+    display: none;
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border: 1px solid #C0D4F2;
+    padding: 1em;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    z-index: 1000;
+    width: 400px;
+  }
+  #editorModal input, #editorModal textarea {
+    width: 100%;
+    margin-bottom: 1em;
+    padding: 0.5em;
+  }
+  #overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+  }
+  #dropzone {
+    margin-top: 20px;
+    padding: 10px;
+    max-width: 500px;
+    border: 2px dashed rgb(170, 187, 221);
+    text-align: center;"
+  }
+  #main {
+	background-color: #FAFAFC;
+    border: 1px solid #D6D6F0;
+    border-radius: 12px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.06);
+    padding: 16px;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    will-change: transform;
+  }
+  li span {
+    padding-left:5px;
+
+  }
+  li span span {
+    font-style: italic;
+    font-size: 0.9em;
+    color: #555;
+    margin-top: 2px;
+  }
+  ul#list[data-only="true"] li button { display: none !important; }
+  ul#list[data-only="true"] li { cursor: pointer; }
+
+  li {
+    cursor: pointer;
+    background: #FFFFFF;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  li:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+  }
+
+  button {
+    background-color: #447BFF;
+    color: white;
+    border-radius: 8px;
+    border: none;
+    padding: 6px 12px;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+  }
+
+  button:hover {
+    background-color: #305ECC;
+  }
+  
+  .donate{
+    background:#f4f4f4;
+    display: inline-block;
+    font-size: 12px;
+    color: gray;
+    padding:10px;
+    border-radius:5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+  }
+  
+</style>
+</head>
+
+<body>
+<div id="main">
+<h1 id="toolboxTitle" title="添加条目（名称 + URL/CID/HTML）。导出条目（📤 或 💾）。通过拖放导入 JSON。">Toolbox Deluxe</h1><hr>
+<div class="input-group" id="in">
+<input id="nameInput" placeholder="Name" type="text">
+<input id="urlInput" placeholder="URL" type="text">
+<input id="cidInput" placeholder="IPFS CID (optional)" type="text">
+<input id="descriptionInput" maxlength="100" placeholder="Description (optional)" type="text">
+<button onclick="addEntry()" style="font-size: 16px;">➕ Add</button>
+<button onclick="download()" style="font-size: 16px;">💾 Export</button><button onclick="downloadDataOnly()" style="font-size: 16px;">📥 Data Only Export</button>
+<button onclick="downloadEmpty()" style="font-size: 16px;">🆕 New Blank File</button>
+</div>
+<div id="htmlcode">
+<div style="margin-top:10px;">
+<label for="htmlCodeInput">Optional HTML Code:</label><br>
+<textarea id="htmlCodeInput" rows="8" style="width:100%;"></textarea>
+</div>
+</div>
+
+<div id="dropzone" style="">Drag file here to import</div>
+
+<ul id="list"><li><span>rgb-color-picker <span>RGB调色板</span></span><span class="icons"><button>▶️</button><button>✏️</button><button>📋</button><button class="icon-btn">📤</button><button>🗑️</button></span></li><li><span>OKTools <span>在线小工具</span></span><span class="icons"><button>▶️</button><button>✏️</button><button>📋</button><button class="icon-btn">📤</button><button>🗑️</button></span></li><li><span>林云在线工具</span><span class="icons"><button>▶️</button><button>✏️</button><button>📋</button><button class="icon-btn">📤</button><button>🗑️</button></span></li><li><span>Emoji</span><span class="icons"><button>▶️</button><button>✏️</button><button>📋</button><button class="icon-btn">📤</button><button>🗑️</button></span></li><li><span>百川在线工具</span><span class="icons"><button>▶️</button><button>✏️</button><button>📋</button><button class="icon-btn">📤</button><button>🗑️</button></span></li><li><span>SM2算法</span><span class="icons"><button>▶️</button><button>✏️</button><button>📋</button><button class="icon-btn">📤</button><button>🗑️</button></span></li></ul>
+
+<script>
+    let data = [{"name":"rgb-color-picker","url":"tools/rgb-color-picker.html","cid":"","description":"RGB调色板","htmlCode":""},{"name":"OKTools","url":"https://t.fuzhicode.com/","cid":"","description":"在线小工具","htmlCode":""},{"name":"林云在线工具","url":"https://www.hottool.cn/","cid":"","htmlCode":"","description":""},{"name":"Emoji","url":"https://emoji6.com/emojiall/","cid":"","htmlCode":"","description":""},{"name":"百川在线工具","url":"https://rivers.chaitin.cn/tools/","cid":"","htmlCode":"","description":""},{"name":"SM2算法","url":"https://zsufa.com/crypto_sm2.html","cid":"","htmlCode":"","description":""}];
+
+    async function openEntry(entry) {
+if (entry.htmlCode) {
+
+    const html = decodeURIComponent(escape(atob(entry.htmlCode)));
+    const newWindow = window.open("", "_blank");
+    newWindow.document.write(html);
+    newWindow.document.close();
+    return;
+}
+
+
+
+if (entry.cid) {
+  const gateways = [
+    "http://127.0.0.1:8080/ipfs/",
+    "https://ipfs.io/ipfs/"
+  ];
+  const fallbackUrl = "https://ipfs.io/ipfs/" + entry.cid;
+  let opened = false;
+
+  // ⏱ Fallback nach 2 Sekunden
+  const fallbackTimer = setTimeout(() => {
+    if (!opened) {
+      window.open(fallbackUrl, "_blank");
+      opened = true;
+    }
+  }, 2000);
+
+  for (let gw of gateways) {
+    try {
+      const url = gw + entry.cid;
+      const response = await fetch(url, { method: "HEAD" });
+      if (response.ok && !opened) {
+        clearTimeout(fallbackTimer);
+        window.open(url, "_blank");
+        opened = true;
+        return;
+      }
+    } catch (e) {
+      // Ignorieren
+    }
+  }
+} else {
+  window.open(entry.url, "_blank");
+}
+
+    }
+
+    function render() {
+      const list = document.getElementById('list');
+      list.innerHTML = '';
+      data.forEach((entry, index) => {
+        const li = document.createElement('li');
+        const span = document.createElement('span');
+        span.innerHTML = entry.name + (entry.description ? ' <span>' + entry.description + '</span>' : '');
+        span.style.cursor = "pointer";
+		span.onclick = () => openEntry(entry);
+
+        const icons = document.createElement('span');
+        icons.className = 'icons';
+
+        const openBtn = document.createElement('button');
+        openBtn.innerHTML = '▶️';
+        openBtn.title = 'Open entry (URL, IPFS or HTML)';
+        openBtn.onclick = (event) => { event.stopPropagation(); openEntry(entry); };
+
+        const editBtn = document.createElement('button');
+        editBtn.innerHTML = '✏️';
+        editBtn.title = 'Edit';
+        editBtn.onclick = (event) => { event.stopPropagation(); editEntry(index); };
+
+        const copyBtn = document.createElement('button');
+        copyBtn.innerHTML = '📋';
+        copyBtn.title = 'Copy data to clipboard';
+copyBtn.onclick = (event) => {
+  event.stopPropagation();
+  navigator.clipboard.writeText(JSON.stringify(entry));
+};
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.innerHTML = '🗑️';
+        deleteBtn.title = 'Delete';
+        deleteBtn.onclick = (event) => { event.stopPropagation(); deleteEntry(index); };
+
+        icons.appendChild(openBtn);
+        icons.appendChild(editBtn);
+        icons.appendChild(copyBtn);
+        const exportBtn = document.createElement("button");
+exportBtn.innerHTML = "📤";
+exportBtn.className = "icon-btn";
+exportBtn.title = "Export entry as JSON file";
+exportBtn.onclick = (event) => { event.stopPropagation(); exportEntry(entry); };
+icons.appendChild(exportBtn);
+
+        icons.appendChild(deleteBtn);
+
+        li.appendChild(span);
+        li.appendChild(icons);
+        li.style.cursor = "pointer";
+li.onclick = () => openEntry(entry);
+list.appendChild(li);
+      });
+    }
+
+    function addEntry() {
+      const name = document.getElementById('nameInput').value.trim();
+      const url = document.getElementById('urlInput').value.trim();
+      const cid = document.getElementById('cidInput').value.trim();
+      const description = document.getElementById('descriptionInput').value.trim();
+    let rawHtml = document.getElementById('htmlCodeInput').value;
+      let htmlCode = rawHtml ? btoa(unescape(encodeURIComponent(rawHtml))) : "";
+
+      if (!name || (!url && !cid && !htmlCode)) return;
+      data.push({ name, url, cid, htmlCode, description });
+      render();
+      document.getElementById('nameInput').value = '';
+      document.getElementById('urlInput').value = '';
+      document.getElementById('cidInput').value = '';
+      document.getElementById('descriptionInput').value = '';
+      document.getElementById('htmlCodeInput').value = '';
+
+    }
+
+
+    function deleteEntry(index) {
+      if (confirm("Delete entry?")) {
+        data.splice(index, 1);
+        render();
+      }
+    }
+
+    function exportEntry(entry) {
+      const blob = new Blob([JSON.stringify(entry, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = (entry.name || 'eintrag') + '.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+function download() {
+  
+  const clone = document.documentElement.cloneNode(true);
+  
+  clone.querySelectorAll('button[title]').forEach(el => el.removeAttribute('title'));
+
+clone.querySelectorAll('#list span[style]').forEach(span => {
+    if (span.getAttribute('style') === 'cursor: pointer;') {
+        span.removeAttribute('style');
+    }
+});
+
+clone.querySelectorAll('#list *[style]').forEach(el => {
+  const s = el.getAttribute('style').replace(/cursor:\s*pointer;?\s*/g, '').trim();
+  s ? el.setAttribute('style', s) : el.removeAttribute('style');
+});
+
+    const escapedData = JSON.stringify(data).replace(/</g, '\u003c');
+
+    const htmlContent = '<!DOCTYPE html>\n' + clone.outerHTML.replace(
+    /let data = .*?;/,
+    'let data = ' + escapedData + ';'
+  );
+
+  // 💾 Blob und Download-Link erzeugen
+  const blob = new Blob([htmlContent], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'toolbox_deluxe.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+    render();
+
+// Drag & Drop Import
+const dropzone = document.getElementById("dropzone");
+dropzone.addEventListener("dragover", (e) => {
+  e.preventDefault(); dropzone.style.background = "#eef";
+});
+dropzone.addEventListener("dragleave", () => {
+  dropzone.style.background = "";
+});
+dropzone.addEventListener("drop", (e) => {
+  e.preventDefault(); dropzone.style.background = "";
+  const file = e.dataTransfer.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const entry = JSON.parse(evt.target.result);
+        if (entry.name && (entry.url || entry.cid || entry.htmlCode)) {
+          data.push(entry);
+          render();
+        } else {
+          alert("Invalid format.");
+        }
+      } catch (err) {
+        alert("Error reading file: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+  }
+});
+  
+function downloadEmpty() {
+  
+  const clone = document.documentElement.cloneNode(true);
+
+  clone.querySelectorAll('button[title]').forEach(el => el.removeAttribute('title'));
+
+  const list = clone.querySelector('#list');
+  if (list) list.innerHTML = '';
+
+  const htmlContent = '<!DOCTYPE html>\n' + clone.outerHTML.replace(
+    /let data = .*?;/,
+    'let data = [];'
+  );
+
+  const blob = new Blob([htmlContent], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'toolbox_deluxe_blank.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function downloadDataOnly() {
+  
+  const clone = document.documentElement.cloneNode(true);
+
+  clone.querySelectorAll('button[title]').forEach(btn => btn.removeAttribute('title'));
+
+clone.querySelectorAll('#list span[style]').forEach(span => {
+    if (span.getAttribute('style') === 'cursor: pointer;') {
+        span.removeAttribute('style');
+    }
+});
+
+clone.querySelectorAll('#list *[style]').forEach(el => {
+  const s = el.getAttribute('style').replace(/cursor:\s*pointer;?\s*/g, '').trim();
+  s ? el.setAttribute('style', s) : el.removeAttribute('style');
+});
+
+  const idsToHide = [
+    "xmr", "htmlcode", "dropzone", "toolboxTitle",
+    "in", "language-selector", "infobox"
+  ];
+  idsToHide.forEach(id => {
+    const el = clone.querySelector(`#${id}`);
+    if (el) el.setAttribute("style", "display:none;");
+  });
+
+  const dsc = clone.querySelector("#dsc");
+  if (dsc) dsc.remove();
+
+  const ul = clone.querySelector("#list");
+  if (ul) ul.setAttribute("data-only", "true");
+
+  clone.querySelectorAll("h1 + hr").forEach(hr => hr.remove());
+
+  const htmlContent = '<!DOCTYPE html>\n' + clone.outerHTML;
+  const blob = new Blob([htmlContent], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'toolbox_data_only.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+</script>
+
+</div>
+
+<div id="dsc" style="background-color: #FAFAFC">
+<div style="margin-top:50px;">
+<div style="margin-top:40px; text-align:left; background:#FAFAFC; padding:1px 20px 20px 20px; border-radius:10px; border: 1px solid; border-color:#D6D6F0;">
+<h2 style="margin-bottom:10px;">Description</h2>
+<hr>
+
+
+
+<div class="info-box" id="infobox">Toolbox-Deluxe 是一个完全本地、安全的工具，用于组织和管理笔记、链接、IPFS 文件、小型数据集和自定义脚本，所有内容都集中在一个离线文件中。<br>无需安装、无需服务器、无跟踪。<br>可作为便携式密码保险箱、本地书签管理器、简单的 IPFS 网关助手、个人知识库或轻量级项目管理器。<br>其潜力无限：用一个干净、独立的解决方案替代电子表格、文本文件或零散的笔记，适用于任何浏览器。<br>您的数据将完全私密且由您掌控。</div>
+<script>
+
+var tooltips = {
+    "en": "Add entries (Name + URL/CID/HTML). Export entries (📤 or 💾). Import JSON by drag & drop.",
+    "de": "Füge Einträge hinzu (Name + URL/CID/HTML). Exportiere Einträge (📤 oder 💾). Importiere JSON per Drag & Drop.",
+    "fr": "Ajoutez des entrées (Nom + URL/CID/HTML). Exportez des entrées (📤 ou 💾). Importez JSON par glisser-déposer.",
+    "es": "Agrega entradas (Nombre + URL/CID/HTML). Exporta entradas (📤 o 💾). Importa JSON arrastrando y soltando.",
+    "pt": "Adicione entradas (Nome + URL/CID/HTML). Exporte entradas (📤 ou 💾). Importe JSON arrastando e soltando.",
+    "zh": "添加条目（名称 + URL/CID/HTML）。导出条目（📤 或 💾）。通过拖放导入 JSON。",
+    "ja": "エントリを追加（名前 + URL/CID/HTML）。エントリをエクスポート（📤 または 💾）。ドラッグ＆ドロップで JSON をインポート。",
+    "ru": "Добавьте записи (Имя + URL/CID/HTML). Экспортируйте записи (📤 или 💾). Импортируйте JSON перетаскиванием.",
+    "ko": "항목 추가 (이름 + URL/CID/HTML). 항목 내보내기 (📤 또는 💾). JSON 파일을 드래그 앤 드롭으로 가져오기."
+};
+var texts = {
+    "en": "Toolbox-Deluxe is a fully local, secure tool for organizing and managing notes, links, IPFS files, small datasets, and custom scripts — all in a single offline file.\nNo installation, no servers, no tracking.\nUse it as a portable password vault, a local bookmark manager, a simple IPFS gateway helper, a personal knowledge base, or a lightweight project organizer.\nThe potential is endless: Replace spreadsheets, text files, or scattered notes with one clean, self-contained solution that runs in any browser.\nYour data stays fully private and under your control.",
+    "de": "Toolbox-Deluxe ist ein vollständig lokales, sicheres Tool zum Organisieren und Verwalten von Notizen, Links, IPFS-Dateien, kleinen Datensätzen und benutzerdefinierten Skripten – alles in einer einzigen Offline-Datei.\nKeine Installation, keine Server, kein Tracking.\nVerwende es als portablen Passwort-Tresor, lokalen Lesezeichen-Manager, einfachen IPFS-Gateway-Helfer, persönliche Wissensdatenbank oder leichtgewichtigen Projekt-Organizer.\nDas Potenzial ist grenzenlos: Ersetze Tabellenkalkulationen, Textdateien oder verstreute Notizen durch eine einzige, saubere, eigenständige Lösung, die in jedem Browser läuft.\nDeine Daten bleiben vollständig privat und unter deiner Kontrolle.",
+    "fr": "Toolbox-Deluxe est un outil local et sécurisé permettant d’organiser et de gérer des notes, des liens, des fichiers IPFS, de petits ensembles de données et des scripts personnalisés – le tout dans un seul fichier hors ligne.\nAucune installation, aucun serveur, aucun suivi.\nUtilisez-le comme coffre-fort de mots de passe portable, gestionnaire de favoris local, assistant IPFS, base de connaissances personnelle ou organisateur de projets léger.\nLe potentiel est infini : remplacez les feuilles de calcul, les fichiers texte ou les notes éparpillées par une solution autonome propre qui fonctionne dans n’importe quel navigateur.\nVos données restent entièrement privées et sous votre contrôle.",
+    "es": "Toolbox-Deluxe es una herramienta totalmente local y segura para organizar y gestionar notas, enlaces, archivos IPFS, pequeños conjuntos de datos y scripts personalizados, todo en un solo archivo sin conexión.\nSin instalación, sin servidores, sin seguimiento.\nÚsalo como un gestor de contraseñas portátil, administrador de marcadores local, asistente de puerta de enlace IPFS, base de datos personal o organizador de proyectos ligero.\nEl potencial es infinito: reemplaza hojas de cálculo, archivos de texto o notas dispersas por una única solución autónoma y limpia que funcione en cualquier navegador.\nTus datos permanecen completamente privados y bajo tu control.",
+    "pt": "Toolbox-Deluxe é uma ferramenta totalmente local e segura para organizar e gerenciar notas, links, arquivos IPFS, pequenos conjuntos de dados e scripts personalizados — tudo em um único arquivo offline.\nSem instalação, sem servidores, sem rastreamento.\nUse como um cofre portátil de senhas, gerenciador de favoritos local, assistente de gateway IPFS, base de conhecimento pessoal ou organizador de projetos leve.\nO potencial é infinito: substitua planilhas, arquivos de texto ou anotações dispersas por uma solução autônoma e limpa que funciona em qualquer navegador.\nSeus dados permanecem totalmente privados e sob seu controle.",
+    "zh": "Toolbox-Deluxe 是一个完全本地、安全的工具，用于组织和管理笔记、链接、IPFS 文件、小型数据集和自定义脚本，所有内容都集中在一个离线文件中。\n无需安装、无需服务器、无跟踪。\n可作为便携式密码保险箱、本地书签管理器、简单的 IPFS 网关助手、个人知识库或轻量级项目管理器。\n其潜力无限：用一个干净、独立的解决方案替代电子表格、文本文件或零散的笔记，适用于任何浏览器。\n您的数据将完全私密且由您掌控。",
+    "ja": "Toolbox-Deluxe は、メモ、リンク、IPFS ファイル、小規模なデータセット、カスタム スクリプトを 1 つのオフライン ファイル内で整理および管理するための、完全にローカルで安全なツールです。\nインストール不要、サーバー不要、追跡なし。\nポータブルなパスワード マネージャー、ローカル ブックマーク マネージャー、シンプルな IPFS ゲートウェイ ヘルパー、個人用ナレッジ ベース、軽量なプロジェクト オーガナイザーとして使用できます。\n可能性は無限大です: スプレッドシート、テキスト ファイル、または散在するメモを 1 つのクリーンで自己完結型のソリューションに置き換え、あらゆるブラウザーで実行できます。\nデータは完全にプライベートであり、完全に管理できます。",
+    "ru": "Toolbox-Deluxe — это полностью локальный и безопасный инструмент для организации и управления заметками, ссылками, файлами IPFS, небольшими наборами данных и пользовательскими сценариями — все это в одном автономном файле.\nБез установки, без серверов, без отслеживания.\nИспользуйте его в качестве портативного хранилища паролей, локального менеджера закладок, помощника IPFS-шлюза, личной базы знаний или легкого организатора проектов.\nПотенциал безграничен: замените таблицы, текстовые файлы или разрозненные заметки на одно чистое, автономное решение, работающее в любом браузере.\nВаши данные остаются полностью конфиденциальными и под вашим контролем.",
+    "ko": "Toolbox-Deluxe 는 메모, 링크, IPFS 파일, 소규모 데이터 세트 및 사용자 정의 스크립트를 단일 오프라인 파일에서 구성하고 관리하기 위한 완전한 로컬 보안 도구입니다.\n설치, 서버, 추적이 필요하지 않습니다.\n휴대용 비밀번호 금고, 로컬 북마크 관리자, 간단한 IPFS 게이트웨이 도우미, 개인 지식 기반 또는 경량 프로젝트 관리자 등으로 사용할 수 있습니다.\n가능성은 무한합니다: 스프레드시트, 텍스트 파일 또는 흩어져 있는 메모를 하나의 깔끔하고 독립적인 솔루션으로 바꿔 어떤 브라우저에서도 실행할 수 있습니다.\n데이터는 완전히 비공개로 유지되며 귀하의 통제 하에 있습니다."
+};
+
+function setInitialLanguage() {
+    var savedLang = localStorage.getItem('toolboxLang');
+    var userLang = savedLang || navigator.language.slice(0, 2).toLowerCase();
+    if (!texts[userLang]) userLang = "en";
+    document.getElementById('lang').value = userLang;
+    document.getElementById('infobox').innerText = texts[userLang];
+    document.getElementById('toolboxTitle').title = tooltips[userLang];
+}
+
+function changeLanguage(lang) {
+    document.getElementById('infobox').innerText = texts[lang];
+    localStorage.setItem('toolboxLang', lang);
+}
+
+document.addEventListener("DOMContentLoaded", setInitialLanguage);
+
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('#list li').forEach(li => {
+        const index = Array.prototype.indexOf.call(li.parentNode.children, li);
+        li.onclick = () => openEntry(data[index]);
+    });
+});
+
+</script>
+
+<div id="language-selector">
+<label for="lang"></label>
+<select id="lang" onchange="changeLanguage(this.value)">
+<option value="en">English</option><option value="de">Deutsch</option><option value="fr">Français</option><option value="es">Español</option><option value="pt">Português</option><option value="zh">中文</option><option value="ja">日本語</option><option value="ru">Русский</option><option value="ko">한국어</option>
+</select>
+</div>
+
+</div>
+</div>
+</div>
+
+
+<!-- <div id="xmr" style="background-color: #FAFAFC">
+<div style="margin-top:50px;">
+<div style="margin-top:40px; text-align:left; background:#FAFAFC; padding:1px 20px 20px 20px; border-radius:10px; border: 1px solid; border-color:#D6D6F0;">
+<h2 style="margin-bottom:10px;">Support</h2>
+<hr>
+<p>If you enjoy using the Toolbox and want to give something back, feel free to support me!</p>
+<a href="https://www.buymeacoffee.com/99fk" target="_blank">
+<img alt="Buy Me a Coffee" src="data:image/png;base64,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" style="margin:15px 0; max-width:300px; border-radius:12px;"><br>
+</a>
+<hr>
+<p><strong>Or donate with Monero (XMR):</strong></p>
+   <code class="donate">
+    85o1zAh8MHtQWrWCJkp4nQ4HAJGEofGX46ViZXsniWbJWpHEW3tQ2sZPSgBon9tr5fD3YdEGtqJjphuyaMgogEnuLZLqkMD
+  </code>
+<hr>
+<p><strong>Contact</strong></p>
+<p>
+    You can also contact me via email: <a href="mailto:6jkqx20d7@mozmail.com">6jkqx20d7@mozmail.com</a>
+</p>
+</div>
+</div>
+</div> -->
+<script>
+
+let editingIndex = null;
+
+  function openEditor(index) {
+
+    editingIndex = index;
+    document.getElementById("overlay").style.display = "block";
+    document.getElementById("editorModal").style.display = "block";
+
+
+    document.getElementById("editName").value = data[index].name;
+    document.getElementById("editURL").value = data[index].url;
+    document.getElementById("editCID").value = data[index].cid;
+    document.getElementById("editDesc").value = data[index].description;
+    document.getElementById("editHTML").value =  decodeURIComponent(escape(atob(data[index].htmlCode)));
+
+    
+  }
+
+  function closeEditor() {
+    document.getElementById("editorModal").style.display = "none";
+    document.getElementById("overlay").style.display = "none";
+  }
+
+function saveEdit() {
+  const rawHtml = document.getElementById("editHTML").value;
+  const encodedHtml = btoa(unescape(encodeURIComponent(rawHtml)));
+
+  const result = {
+    name: document.getElementById("editName").value,
+    url: document.getElementById("editURL").value,
+    cid: document.getElementById("editCID").value,
+    description: document.getElementById("editDesc").value,
+    htmlCode: encodedHtml
+  };
+
+  if (editingIndex !== null) {
+    data[editingIndex] = result;
+    render();
+  }
+
+  closeEditor();
+}
+
+    function editEntry(index) {
+
+      openEditor(index);
+      return;
+
+    }
+
+document.addEventListener("DOMContentLoaded", function() {
+    if (document.getElementById('list')?.getAttribute('data-only') === 'true') {
+        document.querySelectorAll('#list li').forEach(li => {
+            const index = Array.prototype.indexOf.call(li.parentNode.children, li);
+            li.onclick = () => openEntry(data[index]);
+        });
+    }
+    
+document.getElementById("overlay").addEventListener("click", function (e) {
+  if (e.target === this) {
+    closeEditor();
+  }
+});
+
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Escape") {
+    closeEditor();
+  }
+});
+    
+    document.querySelectorAll('#list li').forEach(li => {
+        const index = Array.prototype.indexOf.call(li.parentNode.children, li);
+        li.onclick = () => openEntry(data[index]);
+    });
+        
+});
+
+</script>
+<div id="overlay" style="display: none;"></div>
+<div id="editorModal" style="display: none;">
+<h3>Edit entry</h3>
+<input id="editName" placeholder="Name" required="" style="max-width:98%;" type="text">
+<input id="editURL" placeholder="URL" style="max-width:98%;" type="text">
+<input id="editCID" placeholder="CID" style="max-width:98%;" type="text">
+<input id="editDesc" placeholder="Description" style="max-width:98%;" type="text">
+<textarea id="editHTML" placeholder="HTML-Code" rows="5" style="width: 327px; max-width: 98%; min-width: 98%; height: 909px;"></textarea>
+<button onclick="saveEdit()">Save</button>
+<button onclick="closeEditor()">Cancel</button>
+</div>
+
+
+
+
+
+
+
+
+</body></html>
