@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>天干地支五行属性统计</title>
+    <!-- 完全移除外部CDN，内置核心样式 -->
+    <style>
+        /* 基础重置 */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background-color: #f8f4e9; 
+            min-height: 100vh; 
+            font-family: "SimHei", "Microsoft YaHei", serif; 
+            color: #4a3520; 
+            line-height: 1.6;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+        
+        /* 头部样式 */
+        header {
+            background-color: #4a3520;
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        header h1 { font-size: 28px; margin-bottom: 10px; }
+        header p { color: #e8d9b5; font-size: 16px; }
+        
+        /* 主内容样式 */
+        main { padding: 30px 0; }
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        @media (min-width: 992px) {
+            .grid-layout { grid-template-columns: 1fr 2fr; }
+        }
+        
+        /* 卡片样式 */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(107, 72, 38, 0.2);
+            margin-bottom: 20px;
+        }
+        .card h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e8d9b5;
+        }
+        .card h3 { font-size: 18px; margin-bottom: 15px; color: #6b4826; }
+        
+        /* 选择项样式 */
+        .select-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+        .select-option {
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 3px solid #ccc;
+        }
+        .select-option:hover { background-color: #e8d9b5; }
+        .select-option.active-option {
+            background-color: #d4b589;
+            font-weight: bold;
+            color: #4a3520;
+        }
+        .select-option span.text-xs { font-size: 12px; color: #666; margin-left: 5px; }
+        
+        /* 按钮样式 */
+        .btn-group { display: flex; gap: 10px; }
+        .btn {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+            font-family: inherit;
+        }
+        .btn-reset {
+            background-color: #6b4826;
+            color: white;
+        }
+        .btn-reset:hover { background-color: #4a3520; }
+        .btn-calc {
+            background-color: #2ecc71;
+            color: white;
+        }
+        .btn-calc:hover { background-color: #27ae60; }
+        
+        /* 五行卡片样式 */
+        .elements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .element-card {
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(107, 72, 38, 0.2);
+            transition: all 0.3s;
+            border-left: 4px solid #ccc;
+        }
+        .element-card:hover { transform: scale(1.05); }
+        .element-card h3 { margin-bottom: 8px; font-size: 16px; }
+        .element-card .count { font-size: 24px; font-weight: bold; margin-bottom: 5px; }
+        .element-card .items { font-size: 12px; color: #666; }
+        
+        /* 五行配色 */
+        .wood { border-left-color: #2ecc71; background-color: rgba(46, 204, 113, 0.1); }
+        .wood h3, .wood .count { color: #2ecc71; }
+        .fire { border-left-color: #e74c3c; background-color: rgba(231, 76, 60, 0.1); }
+        .fire h3, .fire .count { color: #e74c3c; }
+        .earth { border-left-color: #f39c12; background-color: rgba(243, 156, 18, 0.1); }
+        .earth h3, .earth .count { color: #f39c12; }
+        .metal { border-left-color: #3498db; background-color: rgba(52, 152, 219, 0.1); }
+        .metal h3, .metal .count { color: #3498db; }
+        .water { border-left-color: #9b59b6; background-color: rgba(155, 89, 182, 0.1); }
+        .water h3, .water .count { color: #9b59b6; }
+        
+        /* 图表容器 */
+        .chart-container {
+            height: 300px;
+            background-color: #f8f4e9;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        
+        /* 已选列表 */
+        .selected-item {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin: 0 4px 4px 0;
+            font-size: 14px;
+        }
+        
+        /* 页脚样式 */
+        footer {
+            background-color: #4a3520;
+            color: #e8d9b5;
+            padding: 20px 0;
+            text-align: center;
+            margin-top: 30px;
+        }
+        footer p { margin-bottom: 5px; font-size: 14px; }
+    </style>
+    <!-- 内置Chart.js核心代码（精简版） -->
+    <script>
+        // Chart.js 极简核心（仅保留环形图功能）
+        !function(t,e){"object"==typeof exports&&"undefined"!=typeof module?module.exports=e():"function"==typeof define&&define.amd?define(e):(t="undefined"!=typeof globalThis?globalThis:t||self).Chart=e()}(this,(function(){"use strict";const t={doughnut:{defaults:{cutout:"60%",radius:"100%",rotation:-90,circumference:360,animation:{animateRotate:!0,animateScale:!1}}}};class e{constructor(t){this.ctx=t,this.canvas=t.canvas,this.width=this.canvas.width,this.height=this.canvas.height}clear(){this.ctx.clearRect(0,0,this.width,this.height)}drawArc(t){const{ctx:e}=this,{x:i,y:n,radius:a,startAngle:s,endAngle:o,circumference:r,rotation:l,borderWidth:h,borderColor:d}=t;e.save(),e.beginPath();const u=(s-l)*Math.PI/180,c=(o-l)*Math.PI/180;e.arc(i,n,a,u,c),h&&(e.lineWidth=h,e.strokeStyle=d,e.stroke()),e.fill(),e.restore()}drawText(t){const{ctx:e}=this,{x:i,y:n,text:a,font:s,color:o}=t;e.save(),e.font=s,e.fillStyle=o,e.textAlign="center",e.textBaseline="middle",e.fillText(a,i,n),e.restore()}}class i{constructor(t,i){this.canvas=t,this.ctx=i,this.chartArea={left:0,right:t.width,top:0,bottom:t.height},this.plugins=[],this.data={datasets:[{data:[0,0,0,0,0],backgroundColor:["#2ecc71","#e74c3c","#f39c12","#3498db","#9b59b6"],borderWidth:1,borderColor:"#fff"}],labels:["木","火","土","金","水"]},this.options=t={responsive:!0,maintainAspectRatio:!1,plugins:{legend:{position:"right",labels:{font:{size:14,family:'"SimHei", serif'},padding:20}},tooltip:{callbacks:{label:function(t){return`${t.label}: ${t.raw||0} 个`}}}},cutout:"60%"},this.renderer=new e(i)}update(){this.renderer.clear();const t=this.getDatasetMeta(0),i=this.calculateTotal(),n=this.options.cutout,a=parseInt(n)%100===0?parseInt(n)/100:parseFloat(n),s=this.chartArea,o=(s.right-s.left)/2,r=(s.bottom-s.top)/2,l=Math.min(o,r),h=l*1,h=l*a,d=this.options.rotation||-90,u=this.options.circumference||360;let c=0;for(let e=0;e<t.data.length;e++){const n=t.data[e],a=n/i*u,f=c+d,p=f+a;this.renderer.drawArc({x:o,y:r,radius:l,startAngle:f,endAngle:p,rotation:d,borderWidth:this.data.datasets[0].borderWidth,borderColor:this.data.datasets[0].borderColor,fillStyle:this.data.datasets[0].backgroundColor[e]}),c+=a}}getDatasetMeta(t){return{data:this.data.datasets[t].data}}calculateTotal(){return this.data.datasets[0].data.reduce((t,e)=>t+e,0)}updateData(t){this.data.datasets[0].data=t,this.update()}}return function(t,n){const a=t.getContext("2d"),s=new i(t,a);return s.update(),s}}));
+    </script>
+</head>
+<body>
+    <!-- 页面头部 -->
+    <header>
+        <div class="container">
+            <h1>天干地支五行属性统计</h1>
+            <p>选择天干、地支，实时统计金木水火土属性分布</p>
+        </div>
+    </header>
+
+    <!-- 主要内容 -->
+    <main class="container">
+        <div class="grid-layout">
+            <!-- 左侧选择区 -->
+            <div class="card">
+                <h2>属性选择</h2>
+                
+                <!-- 天干选择 -->
+                <div class="mb-8">
+                    <h3>天干</h3>
+                    <div class="select-options" id="tianGanList">
+                        <!-- 天干选项动态生成 -->
+                    </div>
+                </div>
+                
+                <!-- 地支选择 -->
+                <div class="mb-8">
+                    <h3>地支</h3>
+                    <div class="select-options" id="diZhiList">
+                        <!-- 地支选项动态生成 -->
+                    </div>
+                </div>
+                
+                <!-- 操作按钮 -->
+                <div class="btn-group">
+                    <button id="resetBtn" class="btn btn-reset">
+                        <i>🔄</i> 重置选择
+                    </button>
+                    <button id="calcBtn" class="btn btn-calc">
+                        <i>🧮</i> 统计属性
+                    </button>
+                </div>
+            </div>
+
+            <!-- 右侧统计结果区 -->
+            <div>
+                <!-- 五行属性卡片 -->
+                <div class="card">
+                    <h2>五行属性分布</h2>
+                    
+                    <div class="elements-grid">
+                        <!-- 木属性 -->
+                        <div class="element-card wood">
+                            <h3>木</h3>
+                            <div class="count" id="woodCount">0</div>
+                            <div class="items" id="woodItems">-</div>
+                        </div>
+                        
+                        <!-- 火属性 -->
+                        <div class="element-card fire">
+                            <h3>火</h3>
+                            <div class="count" id="fireCount">0</div>
+                            <div class="items" id="fireItems">-</div>
+                        </div>
+                        
+                        <!-- 土属性 -->
+                        <div class="element-card earth">
+                            <h3>土</h3>
+                            <div class="count" id="earthCount">0</div>
+                            <div class="items" id="earthItems">-</div>
+                        </div>
+                        
+                        <!-- 金属性 -->
+                        <div class="element-card metal">
+                            <h3>金</h3>
+                            <div class="count" id="metalCount">0</div>
+                            <div class="items" id="metalItems">-</div>
+                        </div>
+                        
+                        <!-- 水属性 -->
+                        <div class="element-card water">
+                            <h3>水</h3>
+                            <div class="count" id="waterCount">0</div>
+                            <div class="items" id="waterItems">-</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 可视化图表 -->
+                    <div class="chart-container">
+                        <canvas id="elementChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- 已选列表 -->
+                <div class="card">
+                    <h2>已选属性列表</h2>
+                    <div id="selectedList" class="text-lg">
+                        <p style="color: #999; font-style: italic;">请选择天干/地支后点击统计按钮</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="container">
+            <p>天干地支五行属性统计工具 © 2025</p>
+            <p style="font-size: 12px;">五行对应：木(绿)、火(红)、土(黄)、金(蓝)、水(紫)</p>
+        </div>
+    </footer>
+
+    <script>
+        // 天干地支五行数据
+        const wuxingData = {
+            tianGan: [
+                { name: '甲', element: 'wood', color: '#2ecc71' },
+                { name: '乙', element: 'wood', color: '#2ecc71' },
+                { name: '丙', element: 'fire', color: '#e74c3c' },
+                { name: '丁', element: 'fire', color: '#e74c3c' },
+                { name: '戊', element: 'earth', color: '#f39c12' },
+                { name: '己', element: 'earth', color: '#f39c12' },
+                { name: '庚', element: 'metal', color: '#3498db' },
+                { name: '辛', element: 'metal', color: '#3498db' },
+                { name: '壬', element: 'water', color: '#9b59b6' },
+                { name: '癸', element: 'water', color: '#9b59b6' }
+            ],
+            diZhi: [
+                { name: '子', element: 'water', color: '#9b59b6' },
+                { name: '丑', element: 'earth', color: '#f39c12' },
+                { name: '寅', element: 'wood', color: '#2ecc71' },
+                { name: '卯', element: 'wood', color: '#2ecc71' },
+                { name: '辰', element: 'earth', color: '#f39c12' },
+                { name: '巳', element: 'fire', color: '#e74c3c' },
+                { name: '午', element: 'fire', color: '#e74c3c' },
+                { name: '未', element: 'earth', color: '#f39c12' },
+                { name: '申', element: 'metal', color: '#3498db' },
+                { name: '酉', element: 'metal', color: '#3498db' },
+                { name: '戌', element: 'earth', color: '#f39c12' },
+                { name: '亥', element: 'water', color: '#9b59b6' }
+            ]
+        };
+
+        // 全局变量
+        let selectedItems = [];
+        let chart = null;
+
+        // 页面加载完成后初始化
+        window.onload = function() {
+            // 强制渲染DOM（解决麒麟系统DOM加载延迟）
+            document.body.style.display = 'block';
+            
+            // 生成选项
+            renderOptions('tianGanList', wuxingData.tianGan);
+            renderOptions('diZhiList', wuxingData.diZhi);
+            
+            // 初始化图表（极简版Chart.js）
+            initChart();
+            
+            // 绑定事件
+            bindEvents();
+        };
+
+        // 渲染选项列表
+        function renderOptions(containerId, data) {
+            const container = document.getElementById(containerId);
+            if (!container) return; // 防止DOM未找到
+            
+            data.forEach(item => {
+                const option = document.createElement('div');
+                option.className = 'select-option';
+                option.dataset.name = item.name;
+                option.dataset.element = item.element;
+                option.style.borderLeft = `3px solid ${item.color}`;
+                option.innerHTML = `
+                    <span class="font-bold">${item.name}</span>
+                    <span class="text-xs ml-2 text-gray-500">${getElementName(item.element)}</span>
+                `;
+                
+                // 点击选择/取消
+                option.onclick = function() {
+                    this.classList.toggle('active-option');
+                    const isSelected = this.classList.contains('active-option');
+                    
+                    if (isSelected) {
+                        selectedItems.push({
+                            name: item.name,
+                            element: item.element,
+                            type: containerId === 'tianGanList' ? '天干' : '地支'
+                        });
+                    } else {
+                        selectedItems = selectedItems.filter(i => i.name !== item.name);
+                    }
+                };
+                
+                container.appendChild(option);
+            });
+        }
+
+        // 获取五行名称
+        function getElementName(element) {
+            const map = { wood: '木', fire: '火', earth: '土', metal: '金', water: '水' };
+            return map[element] || '';
+        }
+
+        // 初始化图表（适配极简版Chart.js）
+        function initChart() {
+            const ctx = document.getElementById('elementChart');
+            if (ctx) {
+                chart = new Chart(ctx);
+            }
+        }
+
+        // 绑定事件
+        function bindEvents() {
+            // 统计按钮
+            document.getElementById('calcBtn').onclick = calculateElements;
+            
+            // 重置按钮
+            document.getElementById('resetBtn').onclick = function() {
+                document.querySelectorAll('.select-option').forEach(option => {
+                    option.classList.remove('active-option');
+                });
+                selectedItems = [];
+                resetResult();
+                chart && chart.updateData([0,0,0,0,0]);
+                document.getElementById('selectedList').innerHTML = '<p style="color: #999; font-style: italic;">请选择天干/地支后点击统计按钮</p>';
+            };
+        }
+
+        // 统计五行属性
+        function calculateElements() {
+            if (selectedItems.length === 0) {
+                alert('请先选择至少一个天干或地支！');
+                return;
+            }
+
+            // 初始化统计结果
+            const result = {
+                wood: { count: 0, items: [] },
+                fire: { count: 0, items: [] },
+                earth: { count: 0, items: [] },
+                metal: { count: 0, items: [] },
+                water: { count: 0, items: [] }
+            };
+
+            // 统计数据
+            selectedItems.forEach(item => {
+                result[item.element].count++;
+                result[item.element].items.push(`${item.type}${item.name}`);
+            });
+
+            // 更新显示
+            updateResultDisplay(result);
+            
+            // 更新图表
+            const chartData = [
+                result.wood.count,
+                result.fire.count,
+                result.earth.count,
+                result.metal.count,
+                result.water.count
+            ];
+            chart && chart.updateData(chartData);
+            
+            // 更新选中列表
+            updateSelectedList();
+        }
+
+        // 更新统计结果显示
+        function updateResultDisplay(result) {
+            document.getElementById('woodCount').textContent = result.wood.count;
+            document.getElementById('fireCount').textContent = result.fire.count;
+            document.getElementById('earthCount').textContent = result.earth.count;
+            document.getElementById('metalCount').textContent = result.metal.count;
+            document.getElementById('waterCount').textContent = result.water.count;
+            
+            document.getElementById('woodItems').textContent = result.wood.items.join('、') || '-';
+            document.getElementById('fireItems').textContent = result.fire.items.join('、') || '-';
+            document.getElementById('earthItems').textContent = result.earth.items.join('、') || '-';
+            document.getElementById('metalItems').textContent = result.metal.items.join('、') || '-';
+            document.getElementById('waterItems').textContent = result.water.items.join('、') || '-';
+        }
+
+        // 重置统计结果
+        function resetResult() {
+            document.getElementById('woodCount').textContent = '0';
+            document.getElementById('fireCount').textContent = '0';
+            document.getElementById('earthCount').textContent = '0';
+            document.getElementById('metalCount').textContent = '0';
+            document.getElementById('waterCount').textContent = '0';
+            
+            document.getElementById('woodItems').textContent = '-';
+            document.getElementById('fireItems').textContent = '-';
+            document.getElementById('earthItems').textContent = '-';
+            document.getElementById('metalItems').textContent = '-';
+            document.getElementById('waterItems').textContent = '-';
+        }
+
+        // 更新选中列表
+        function updateSelectedList() {
+            const listContainer = document.getElementById('selectedList');
+            if (selectedItems.length === 0) {
+                listContainer.innerHTML = '<p style="color: #999; font-style: italic;">请选择天干/地支后点击统计按钮</p>';
+                return;
+            }
+
+            // 分组显示
+            const tianGanItems = selectedItems.filter(item => item.type === '天干');
+            const diZhiItems = selectedItems.filter(item => item.type === '地支');
+
+            let html = `
+                <div style="margin-bottom: 15px;">
+                    <h4 style="font-weight: bold; margin-bottom: 8px;">天干：</h4>
+                    <p>${tianGanItems.map(item => `<span class="selected-item" style="background-color: ${item.element === 'wood' ? '#2ecc711a' : item.element === 'fire' ? '#e74c3c1a' : item.element === 'earth' ? '#f39c121a' : item.element === 'metal' ? '#3498db1a' : '#9b59b61a'}; color: ${item.element === 'wood' ? '#2ecc71' : item.element === 'fire' ? '#e74c3c' : item.element === 'earth' ? '#f39c12' : item.element === 'metal' ? '#3498db' : '#9b59b6'}">${item.name}</span>`).join(' ') || '无'}</p>
+                </div>
+                <div>
+                    <h4 style="font-weight: bold; margin-bottom: 8px;">地支：</h4>
+                    <p>${diZhiItems.map(item => `<span class="selected-item" style="background-color: ${item.element === 'wood' ? '#2ecc711a' : item.element === 'fire' ? '#e74c3c1a' : item.element === 'earth' ? '#f39c121a' : item.element === 'metal' ? '#3498db1a' : '#9b59b61a'}; color: ${item.element === 'wood' ? '#2ecc71' : item.element === 'fire' ? '#e74c3c' : item.element === 'earth' ? '#f39c12' : item.element === 'metal' ? '#3498db' : '#9b59b6'}">${item.name}</span>`).join(' ') || '无'}</p>
+                </div>
+            `;
+            
+            listContainer.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
