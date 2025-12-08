@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON格式化工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 16px 20px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .toolbar {
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #1e7e34;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .editor-container {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .editor-container {
+                flex-direction: row;
+            }
+        }
+
+        .editor-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .editor-label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 15px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 15px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: vertical;
+            transition: border-color 0.2s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success-message {
+            color: #28a745;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .footer {
+            padding: 15px 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #6c757d;
+            border-top: 1px solid #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">JSON格式化工具</div>
+        
+        <div class="toolbar">
+            <button class="btn btn-primary" id="formatBtn">格式化JSON</button>
+            <button class="btn btn-warning" id="compressBtn">压缩JSON</button>
+            <button class="btn btn-success" id="copySourceBtn">复制源文本</button>
+            <button class="btn btn-success" id="copyResultBtn">复制结果文本</button>
+            <button class="btn btn-danger" id="clearBtn">清空内容</button>
+        </div>
+        
+        <div class="editor-container">
+            <div class="editor-wrapper">
+                <div class="editor-label">源JSON文本</div>
+                <textarea id="sourceText" placeholder="请输入或粘贴JSON文本..."></textarea>
+                <div class="error-message" id="sourceError">JSON格式错误，请检查！</div>
+            </div>
+            
+            <div class="editor-wrapper">
+                <div class="editor-label">处理结果</div>
+                <textarea id="resultText" placeholder="处理后的JSON将显示在这里..." readonly></textarea>
+                <div class="success-message" id="copySuccess">复制成功！</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            轻量级JSON格式化工具 | 支持格式化、压缩、复制等功能
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const sourceText = document.getElementById('sourceText');
+        const resultText = document.getElementById('resultText');
+        const formatBtn = document.getElementById('formatBtn');
+        const compressBtn = document.getElementById('compressBtn');
+        const copySourceBtn = document.getElementById('copySourceBtn');
+        const copyResultBtn = document.getElementById('copyResultBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const sourceError = document.getElementById('sourceError');
+        const copySuccess = document.getElementById('copySuccess');
+
+        // 格式化JSON
+        formatBtn.addEventListener('click', () => {
+            processJSON(true);
+        });
+
+        // 压缩JSON
+        compressBtn.addEventListener('click', () => {
+            processJSON(false);
+        });
+
+        // 复制源文本
+        copySourceBtn.addEventListener('click', () => {
+            copyToClipboard(sourceText.value, 'source');
+        });
+
+        // 复制结果文本
+        copyResultBtn.addEventListener('click', () => {
+            copyToClipboard(resultText.value, 'result');
+        });
+
+        // 清空内容
+        clearBtn.addEventListener('click', () => {
+            sourceText.value = '';
+            resultText.value = '';
+            sourceError.style.display = 'none';
+        });
+
+        // 处理JSON核心函数
+        function processJSON(isFormat) {
+            const input = sourceText.value.trim();
+            sourceError.style.display = 'none';
+            
+            if (!input) {
+                resultText.value = '';
+                return;
+            }
+
+            try {
+                // 解析JSON
+                const jsonObj = JSON.parse(input);
+                
+                // 根据参数格式化或压缩
+                if (isFormat) {
+                    resultText.value = JSON.stringify(jsonObj, null, 4);
+                } else {
+                    resultText.value = JSON.stringify(jsonObj);
+                }
+            } catch (e) {
+                // 显示错误信息
+                sourceError.style.display = 'block';
+                resultText.value = '';
+                console.error('JSON解析错误:', e);
+            }
+        }
+
+        // 复制到剪贴板
+        function copyToClipboard(text, type) {
+            if (!text) {
+                alert(type === 'source' ? '源文本为空！' : '结果文本为空！');
+                return;
+            }
+
+            navigator.clipboard.writeText(text).then(() => {
+                // 显示成功提示
+                copySuccess.style.display = 'block';
+                setTimeout(() => {
+                    copySuccess.style.display = 'none';
+                }, 2000);
+            }).catch(err => {
+                console.error('复制失败:', err);
+                alert('复制失败，请手动复制！');
+            });
+        }
+
+        // 监听源文本输入，自动隐藏错误提示
+        sourceText.addEventListener('input', () => {
+            sourceError.style.display = 'none';
+        });
+    </script>
+</body>
+</html>
