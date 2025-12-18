@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>财务计算工具 - 存款利息与房贷还款计算器</title>
     <!-- Tailwind CSS v3 -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -80,6 +80,30 @@
             }
             .chart-container {
                 @apply w-full h-64 mt-6;
+            }
+            
+            /* 移动设备优化 */
+            @media (max-width: 640px) {
+                .result-row {
+                    @apply grid-cols-2;
+                }
+                .result-value {
+                    @apply col-span-1 text-right;
+                }
+                .btn {
+                    @apply py-3 text-base;
+                }
+                .input-field {
+                    @apply py-3 text-base;
+                }
+                /* 优化表格在移动设备上的显示 */
+                .mobile-table {
+                    @apply text-xs;
+                }
+                .mobile-table th,
+                .mobile-table td {
+                    @apply px-2 py-2;
+                }
             }
         }
     </style>
@@ -173,7 +197,7 @@
                     <div class="mt-8">
                         <h4 class="text-lg font-bold text-dark mb-3">年度明细</h4>
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
+                            <table class="min-w-full divide-y divide-gray-200 mobile-table">
                                 <thead>
                                     <tr>
                                         <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">年份</th>
@@ -270,7 +294,7 @@
                             </div>
                         </div>
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
+                            <table class="min-w-full divide-y divide-gray-200 mobile-table">
                                 <thead>
                                     <tr>
                                         <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">期数</th>
@@ -717,19 +741,48 @@
             // 为输入框添加实时计算功能
             const depositInputs = ['deposit-amount', 'deposit-rate', 'deposit-years', 'deposit-type'];
             depositInputs.forEach(id => {
-                document.getElementById(id).addEventListener('input', function() {
-                    if (document.getElementById('deposit-results').classList.contains('hidden') === false) {
-                        calculateDeposit();
-                    }
-                });
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', function() {
+                        if (document.getElementById('deposit-results') && !document.getElementById('deposit-results').classList.contains('hidden')) {
+                            calculateDeposit();
+                        }
+                    });
+                    // 添加触摸设备支持
+                    element.addEventListener('change', function() {
+                        if (document.getElementById('deposit-results') && !document.getElementById('deposit-results').classList.contains('hidden')) {
+                            calculateDeposit();
+                        }
+                    });
+                }
             });
             
             const mortgageInputs = ['mortgage-amount', 'mortgage-rate', 'mortgage-months', 'mortgage-type'];
             mortgageInputs.forEach(id => {
-                document.getElementById(id).addEventListener('input', function() {
-                    if (document.getElementById('mortgage-results').classList.contains('hidden') === false) {
-                        calculateMortgage();
-                    }
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', function() {
+                        if (document.getElementById('mortgage-results') && !document.getElementById('mortgage-results').classList.contains('hidden')) {
+                            calculateMortgage();
+                        }
+                    });
+                    // 添加触摸设备支持
+                    element.addEventListener('change', function() {
+                        if (document.getElementById('mortgage-results') && !document.getElementById('mortgage-results').classList.contains('hidden')) {
+                            calculateMortgage();
+                        }
+                    });
+                }
+            });
+            
+            // 添加按钮触摸反馈
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.addEventListener('touchstart', function() {
+                    this.classList.add('opacity-80');
+                });
+                button.addEventListener('touchend', function() {
+                    this.classList.remove('opacity-80');
                 });
             });
         });
