@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>财务计算工具 - 存款利息与房贷还款计算器</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 统一的 Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#10b981',
+                        accent: '#f59e0b',
+                        dark: '#1e293b',
+                        light: '#f8fafc'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                        'card-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .transition-all-300 {
+                transition: all 300ms ease-in-out;
+            }
+            .card {
+                @apply bg-white rounded-xl shadow-card p-6 transition-all-300;
+            }
+            .card:hover {
+                @apply shadow-card-hover;
+            }
+            .btn {
+                @apply px-4 py-2 rounded-lg font-medium transition-all-300 focus:outline-none focus:ring-2 focus:ring-offset-2;
+            }
+            .btn-primary {
+                @apply bg-primary text-white hover:bg-primary/90 focus:ring-primary/50;
+            }
+            .btn-secondary {
+                @apply bg-secondary text-white hover:bg-secondary/90 focus:ring-secondary/50;
+            }
+            .btn-accent {
+                @apply bg-accent text-white hover:bg-accent/90 focus:ring-accent/50;
+            }
+            .input-field {
+                @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary;
+            }
+            .tab {
+                @apply px-4 py-2 font-medium rounded-t-lg transition-all-300;
+            }
+            .tab-active {
+                @apply bg-white text-primary border-b-2 border-primary;
+            }
+            .tab-inactive {
+                @apply bg-gray-100 text-gray-600 hover:bg-gray-200;
+            }
+            .result-row {
+                @apply grid grid-cols-3 gap-4 py-3 border-b border-gray-200;
+            }
+            .result-label {
+                @apply font-medium text-gray-600;
+            }
+            .result-value {
+                @apply font-bold text-dark col-span-2;
+            }
+            .chart-container {
+                @apply w-full h-64 mt-6;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-5xl">
+        <!-- 头部 -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-dark mb-2">财务计算工具</h1>
+            <p class="text-gray-600">轻松计算存款利息和房贷还款，助您做好财务规划</p>
+        </header>
+
+        <!-- 主要内容 -->
+        <main>
+            <!-- 标签页导航 -->
+            <div class="flex border-b border-gray-200 mb-6">
+                <button id="deposit-tab" class="tab tab-active" onclick="switchTab('deposit')">
+                    <i class="fa fa-piggy-bank mr-2"></i>存款利息计算
+                </button>
+                <button id="mortgage-tab" class="tab tab-inactive" onclick="switchTab('mortgage')">
+                    <i class="fa fa-home mr-2"></i>房贷还款计算
+                </button>
+            </div>
+
+            <!-- 存款利息计算器 -->
+            <div id="deposit-calculator" class="card">
+                <h2 class="text-2xl font-bold text-dark mb-6">存款利息计算器</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label for="deposit-amount" class="block text-sm font-medium text-gray-700 mb-1">存款金额 (元)</label>
+                        <input type="number" id="deposit-amount" class="input-field" placeholder="请输入存款金额" value="100000">
+                    </div>
+                    <div>
+                        <label for="deposit-rate" class="block text-sm font-medium text-gray-700 mb-1">年利率 (%)</label>
+                        <input type="number" id="deposit-rate" class="input-field" placeholder="请输入年利率" step="0.01" value="2.5">
+                    </div>
+                    <div>
+                        <label for="deposit-years" class="block text-sm font-medium text-gray-700 mb-1">存款年限 (年)</label>
+                        <input type="number" id="deposit-years" class="input-field" placeholder="请输入存款年限" value="1">
+                    </div>
+                    <div>
+                        <label for="deposit-type" class="block text-sm font-medium text-gray-700 mb-1">存款类型</label>
+                        <select id="deposit-type" class="input-field">
+                            <option value="simple">活期/定期（单利）</option>
+                            <option value="compound">定期（复利，自动转存）</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button id="calculate-deposit" class="btn btn-primary w-full md:w-auto" onclick="calculateDeposit()">
+                    <i class="fa fa-calculator mr-2"></i>计算利息
+                </button>
+
+                <!-- 存款计算结果 -->
+                <div id="deposit-results" class="mt-8 hidden">
+                    <h3 class="text-xl font-bold text-dark mb-4">计算结果</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- 结果摘要 -->
+                        <div>
+                            <div class="result-row">
+                                <div class="result-label">存款本金</div>
+                                <div class="result-value" id="deposit-principal">0 元</div>
+                            </div>
+                            <div class="result-row">
+                                <div class="result-label">总利息</div>
+                                <div class="result-value text-primary" id="deposit-total-interest">0 元</div>
+                            </div>
+                            <div class="result-row">
+                                <div class="result-label">到期总额</div>
+                                <div class="result-value text-secondary" id="deposit-final-amount">0 元</div>
+                            </div>
+                            <div class="result-row">
+                                <div class="result-label">年均收益</div>
+                                <div class="result-value" id="deposit-annual-return">0 元</div>
+                            </div>
+                            <div class="result-row">
+                                <div class="result-label">收益率</div>
+                                <div class="result-value" id="deposit-return-rate">0%</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 图表 -->
+                        <div>
+                            <canvas id="deposit-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 详细年度数据 -->
+                    <div class="mt-8">
+                        <h4 class="text-lg font-bold text-dark mb-3">年度明细</h4>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead>
+                                    <tr>
+                                        <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">年份</th>
+                                        <th class="px-4 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">年初金额 (元)</th>
+                                        <th class="px-4 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">当年利息 (元)</th>
+                                        <th class="px-4 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">年末金额 (元)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="deposit-details" class="bg-white divide-y divide-gray-200">
+                                    <!-- 年度数据将通过 JavaScript 动态生成 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 房贷还款计算器 -->
+            <div id="mortgage-calculator" class="card hidden">
+                <h2 class="text-2xl font-bold text-dark mb-6">房贷还款计算器</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label for="mortgage-amount" class="block text-sm font-medium text-gray-700 mb-1">贷款金额 (元)</label>
+                        <input type="number" id="mortgage-amount" class="input-field" placeholder="请输入贷款金额" value="1000000">
+                    </div>
+                    <div>
+                        <label for="mortgage-rate" class="block text-sm font-medium text-gray-700 mb-1">年利率 (%)</label>
+                        <input type="number" id="mortgage-rate" class="input-field" placeholder="请输入年利率" step="0.01" value="4.9">
+                    </div>
+                    <div>
+                        <label for="mortgage-months" class="block text-sm font-medium text-gray-700 mb-1">贷款期数 (月)</label>
+                        <input type="number" id="mortgage-months" class="input-field" placeholder="请输入贷款期数" value="360">
+                    </div>
+                    <div>
+                        <label for="mortgage-type" class="block text-sm font-medium text-gray-700 mb-1">还款方式</label>
+                        <select id="mortgage-type" class="input-field">
+                            <option value="equal-principal-interest">等额本息</option>
+                            <option value="equal-principal">等额本金</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button id="calculate-mortgage" class="btn btn-primary w-full md:w-auto" onclick="calculateMortgage()">
+                    <i class="fa fa-calculator mr-2"></i>计算还款
+                </button>
+
+                <!-- 房贷计算结果 -->
+                <div id="mortgage-results" class="mt-8 hidden">
+                    <h3 class="text-xl font-bold text-dark mb-4">计算结果</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- 结果摘要 -->
+                        <div>
+                            <div class="result-row">
+                                <div class="result-label">贷款本金</div>
+                                <div class="result-value" id="mortgage-principal">0 元</div>
+                            </div>
+                            <div class="result-row">
+                                <div class="result-label">贷款利息总额</div>
+                                <div class="result-value text-primary" id="mortgage-total-interest">0 元</div>
+                            </div>
+                            <div class="result-row">
+                                <div class="result-label">还款总额</div>
+                                <div class="result-value text-secondary" id="mortgage-total-payment">0 元</div>
+                            </div>
+                            <div class="result-row">
+                                <div class="result-label">月均还款</div>
+                                <div class="result-value" id="mortgage-monthly-payment">0 元</div>
+                            </div>
+                            <div class="result-row">
+                                <div class="result-label">首月还款</div>
+                                <div class="result-value" id="mortgage-first-month">0 元</div>
+                            </div>
+                            <div class="result-row">
+                                <div class="result-label">还款期数</div>
+                                <div class="result-value" id="mortgage-total-months">0 期</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 图表 -->
+                        <div>
+                            <canvas id="mortgage-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 详细月度数据 -->
+                    <div class="mt-8">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-lg font-bold text-dark">月度还款明细</h4>
+                            <div class="flex space-x-2">
+                                <button id="show-12-months" class="btn btn-sm btn-secondary" onclick="showMortgageDetails(12)">显示12个月</button>
+                                <button id="show-all-months" class="btn btn-sm btn-primary" onclick="showMortgageDetails('all')">显示全部</button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead>
+                                    <tr>
+                                        <th class="px-4 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">期数</th>
+                                        <th class="px-4 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">月供 (元)</th>
+                                        <th class="px-4 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">本金 (元)</th>
+                                        <th class="px-4 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">利息 (元)</th>
+                                        <th class="px-4 py-3 bg-gray-50 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">剩余本金 (元)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="mortgage-details" class="bg-white divide-y divide-gray-200">
+                                    <!-- 月度数据将通过 JavaScript 动态生成 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部 -->
+        <footer class="mt-12 text-center text-gray-500 text-sm">
+            <p>© 2025 财务计算工具 | 本工具仅供参考，实际计算结果可能略有差异</p>
+        </footer>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+
+    <!-- JavaScript -->
+    <script>
+        // 全局变量
+        let depositChart = null;
+        let mortgageChart = null;
+        let mortgageData = [];
+
+        // 切换标签页
+        function switchTab(tabName) {
+            // 隐藏所有计算器
+            document.getElementById('deposit-calculator').classList.add('hidden');
+            document.getElementById('mortgage-calculator').classList.add('hidden');
+            
+            // 重置标签样式
+            document.getElementById('deposit-tab').classList.remove('tab-active');
+            document.getElementById('deposit-tab').classList.add('tab-inactive');
+            document.getElementById('mortgage-tab').classList.remove('tab-active');
+            document.getElementById('mortgage-tab').classList.add('tab-inactive');
+            
+            // 显示选中的计算器并更新标签样式
+            if (tabName === 'deposit') {
+                document.getElementById('deposit-calculator').classList.remove('hidden');
+                document.getElementById('deposit-tab').classList.remove('tab-inactive');
+                document.getElementById('deposit-tab').classList.add('tab-active');
+            } else if (tabName === 'mortgage') {
+                document.getElementById('mortgage-calculator').classList.remove('hidden');
+                document.getElementById('mortgage-tab').classList.remove('tab-inactive');
+                document.getElementById('mortgage-tab').classList.add('tab-active');
+            }
+        }
+
+        // 格式化数字为货币格式
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('zh-CN', {
+                style: 'decimal',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(value);
+        }
+
+        // 计算存款利息
+        function calculateDeposit() {
+            console.log('计算存款利息');
+            // 获取输入值
+            const principal = parseFloat(document.getElementById('deposit-amount').value);
+            const annualRate = parseFloat(document.getElementById('deposit-rate').value) / 100;
+            const years = parseInt(document.getElementById('deposit-years').value);
+            const depositType = document.getElementById('deposit-type').value;
+            
+            console.log('输入值:', principal, annualRate, years, depositType);
+            
+            // 验证输入
+            if (isNaN(principal) || principal <= 0 || isNaN(annualRate) || annualRate < 0 || isNaN(years) || years <= 0) {
+                alert('请输入有效的数值');
+                return;
+            }
+            
+            // 计算结果
+            let totalInterest = 0;
+            let finalAmount = principal;
+            const annualData = [];
+            
+            if (depositType === 'simple') {
+                // 单利计算
+                totalInterest = principal * annualRate * years;
+                finalAmount = principal + totalInterest;
+                
+                // 生成年度数据
+                for (let year = 1; year <= years; year++) {
+                    const yearInterest = principal * annualRate;
+                    annualData.push({
+                        year: year,
+                        startAmount: principal,
+                        interest: yearInterest,
+                        endAmount: principal + yearInterest * year
+                    });
+                }
+            } else {
+                // 复利计算
+                let currentAmount = principal;
+                
+                for (let year = 1; year <= years; year++) {
+                    const startAmount = currentAmount;
+                    const yearInterest = currentAmount * annualRate;
+                    currentAmount += yearInterest;
+                    
+                    annualData.push({
+                        year: year,
+                        startAmount: startAmount,
+                        interest: yearInterest,
+                        endAmount: currentAmount
+                    });
+                }
+                
+                totalInterest = currentAmount - principal;
+                finalAmount = currentAmount;
+            }
+            
+            console.log('计算结果:', totalInterest, finalAmount);
+            
+            // 更新结果显示
+            document.getElementById('deposit-principal').textContent = formatCurrency(principal) + ' 元';
+            document.getElementById('deposit-total-interest').textContent = formatCurrency(totalInterest) + ' 元';
+            document.getElementById('deposit-final-amount').textContent = formatCurrency(finalAmount) + ' 元';
+            document.getElementById('deposit-annual-return').textContent = formatCurrency(totalInterest / years) + ' 元';
+            document.getElementById('deposit-return-rate').textContent = ((totalInterest / principal) * 100).toFixed(2) + '%';
+            
+            // 生成详细年度数据表格
+            const detailsBody = document.getElementById('deposit-details');
+            detailsBody.innerHTML = '';
+            
+            annualData.forEach(data => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-4 py-3 whitespace-nowrap">第 ${data.year} 年</td>
+                    <td class="px-4 py-3 text-right whitespace-nowrap">${formatCurrency(data.startAmount)}</td>
+                    <td class="px-4 py-3 text-right whitespace-nowrap">${formatCurrency(data.interest)}</td>
+                    <td class="px-4 py-3 text-right whitespace-nowrap">${formatCurrency(data.endAmount)}</td>
+                `;
+                detailsBody.appendChild(row);
+            });
+            
+            // 更新图表
+            updateDepositChart(annualData);
+            
+            // 显示结果区域
+            document.getElementById('deposit-results').classList.remove('hidden');
+        }
+
+        // 更新存款图表
+        function updateDepositChart(annualData) {
+            const ctx = document.getElementById('deposit-chart').getContext('2d');
+            
+            // 销毁现有图表
+            if (depositChart) {
+                depositChart.destroy();
+            }
+            
+            // 准备数据
+            const labels = annualData.map(data => `第 ${data.year} 年`);
+            const principalData = annualData.map(() => annualData[0].startAmount);
+            const interestData = annualData.map(data => data.endAmount - annualData[0].startAmount);
+            
+            // 创建新图表
+            depositChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '本金',
+                            data: principalData,
+                            backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '利息',
+                            data: interestData,
+                            backgroundColor: 'rgba(16, 185, 129, 0.5)',
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: true,
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString() + ' 元';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '存款增长趋势'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + formatCurrency(context.raw) + ' 元';
+                                },
+                                footer: function(tooltipItems) {
+                                    const total = tooltipItems.reduce((sum, item) => sum + item.raw, 0);
+                                    return '总计: ' + formatCurrency(total) + ' 元';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 计算房贷还款
+        function calculateMortgage() {
+            console.log('计算房贷还款');
+            // 获取输入值
+            const principal = parseFloat(document.getElementById('mortgage-amount').value);
+            const annualRate = parseFloat(document.getElementById('mortgage-rate').value) / 100;
+            const totalMonths = parseInt(document.getElementById('mortgage-months').value);
+            const mortgageType = document.getElementById('mortgage-type').value;
+            
+            console.log('输入值:', principal, annualRate, totalMonths, mortgageType);
+            
+            // 验证输入
+            if (isNaN(principal) || principal <= 0 || isNaN(annualRate) || annualRate < 0 || isNaN(totalMonths) || totalMonths <= 0) {
+                alert('请输入有效的数值');
+                return;
+            }
+            
+            // 计算结果
+            const monthlyRate = annualRate / 12;
+            let totalInterest = 0;
+            let totalPayment = 0;
+            let monthlyPayment = 0;
+            let firstMonthPayment = 0;
+            
+            // 重置月度数据
+            mortgageData = [];
+            
+            if (mortgageType === 'equal-principal-interest') {
+                // 等额本息
+                monthlyPayment = principal * monthlyRate * Math.pow(1 + monthlyRate, totalMonths) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
+                totalPayment = monthlyPayment * totalMonths;
+                totalInterest = totalPayment - principal;
+                firstMonthPayment = monthlyPayment;
+                
+                // 生成月度数据
+                let remainingPrincipal = principal;
+                
+                for (let month = 1; month <= totalMonths; month++) {
+                    const monthInterest = remainingPrincipal * monthlyRate;
+                    const monthPrincipal = monthlyPayment - monthInterest;
+                    remainingPrincipal -= monthPrincipal;
+                    
+                    mortgageData.push({
+                        month: month,
+                        payment: monthlyPayment,
+                        principal: monthPrincipal,
+                        interest: monthInterest,
+                        remainingPrincipal: Math.max(0, remainingPrincipal)
+                    });
+                }
+            } else {
+                // 等额本金
+                const monthlyPrincipal = principal / totalMonths;
+                let remainingPrincipal = principal;
+                
+                for (let month = 1; month <= totalMonths; month++) {
+                    const monthInterest = remainingPrincipal * monthlyRate;
+                    const monthPayment = monthlyPrincipal + monthInterest;
+                    remainingPrincipal -= monthlyPrincipal;
+                    
+                    totalInterest += monthInterest;
+                    
+                    mortgageData.push({
+                        month: month,
+                        payment: monthPayment,
+                        principal: monthlyPrincipal,
+                        interest: monthInterest,
+                        remainingPrincipal: Math.max(0, remainingPrincipal)
+                    });
+                }
+                
+                totalPayment = principal + totalInterest;
+                monthlyPayment = totalPayment / totalMonths; // 月均还款（等额本金没有固定月供）
+                firstMonthPayment = mortgageData[0].payment;
+            }
+            
+            console.log('计算结果:', totalInterest, totalPayment, monthlyPayment);
+            
+            // 更新结果显示
+            document.getElementById('mortgage-principal').textContent = formatCurrency(principal) + ' 元';
+            document.getElementById('mortgage-total-interest').textContent = formatCurrency(totalInterest) + ' 元';
+            document.getElementById('mortgage-total-payment').textContent = formatCurrency(totalPayment) + ' 元';
+            document.getElementById('mortgage-monthly-payment').textContent = formatCurrency(monthlyPayment) + ' 元';
+            document.getElementById('mortgage-first-month').textContent = formatCurrency(firstMonthPayment) + ' 元';
+            document.getElementById('mortgage-total-months').textContent = totalMonths + ' 期';
+            
+            // 显示前12个月的详细数据
+            showMortgageDetails(12);
+            
+            // 更新图表
+            updateMortgageChart();
+            
+            // 显示结果区域
+            document.getElementById('mortgage-results').classList.remove('hidden');
+        }
+
+        // 显示房贷详细数据
+        function showMortgageDetails(months) {
+            const detailsBody = document.getElementById('mortgage-details');
+            detailsBody.innerHTML = '';
+            
+            const displayData = months === 'all' ? mortgageData : mortgageData.slice(0, months);
+            
+            displayData.forEach(data => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-4 py-3 whitespace-nowrap">第 ${data.month} 期</td>
+                    <td class="px-4 py-3 text-right whitespace-nowrap">${formatCurrency(data.payment)}</td>
+                    <td class="px-4 py-3 text-right whitespace-nowrap">${formatCurrency(data.principal)}</td>
+                    <td class="px-4 py-3 text-right whitespace-nowrap">${formatCurrency(data.interest)}</td>
+                    <td class="px-4 py-3 text-right whitespace-nowrap">${formatCurrency(data.remainingPrincipal)}</td>
+                `;
+                detailsBody.appendChild(row);
+            });
+        }
+
+        // 更新房贷图表
+        function updateMortgageChart() {
+            const ctx = document.getElementById('mortgage-chart').getContext('2d');
+            
+            // 销毁现有图表
+            if (mortgageChart) {
+                mortgageChart.destroy();
+            }
+            
+            // 准备数据（每6个月取一个数据点，避免数据点过多）
+            const labels = [];
+            const principalData = [];
+            const interestData = [];
+            
+            const interval = mortgageData.length > 60 ? 6 : (mortgageData.length > 30 ? 3 : 1);
+            
+            for (let i = 0; i < mortgageData.length; i += interval) {
+                labels.push(`第 ${mortgageData[i].month} 期`);
+                principalData.push(mortgageData[i].principal);
+                interestData.push(mortgageData[i].interest);
+            }
+            
+            // 如果最后一个数据点不是最后一期，添加最后一期
+            if (mortgageData.length > 0 && labels[labels.length - 1] !== `第 ${mortgageData.length} 期`) {
+                const lastIndex = mortgageData.length - 1;
+                labels.push(`第 ${mortgageData[lastIndex].month} 期`);
+                principalData.push(mortgageData[lastIndex].principal);
+                interestData.push(mortgageData[lastIndex].interest);
+            }
+            
+            // 创建新图表
+            mortgageChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '本金',
+                            data: principalData,
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.1
+                        },
+                        {
+                            label: '利息',
+                            data: interestData,
+                            borderColor: 'rgba(245, 158, 11, 1)',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString() + ' 元';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '月供构成变化趋势'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + formatCurrency(context.raw) + ' 元';
+                                },
+                                footer: function(tooltipItems) {
+                                    const total = tooltipItems.reduce((sum, item) => sum + item.raw, 0);
+                                    return '月供: ' + formatCurrency(total) + ' 元';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成');
+            // 默认显示存款计算器
+            switchTab('deposit');
+            
+            // 为输入框添加实时计算功能
+            const depositInputs = ['deposit-amount', 'deposit-rate', 'deposit-years', 'deposit-type'];
+            depositInputs.forEach(id => {
+                document.getElementById(id).addEventListener('input', function() {
+                    if (document.getElementById('deposit-results').classList.contains('hidden') === false) {
+                        calculateDeposit();
+                    }
+                });
+            });
+            
+            const mortgageInputs = ['mortgage-amount', 'mortgage-rate', 'mortgage-months', 'mortgage-type'];
+            mortgageInputs.forEach(id => {
+                document.getElementById(id).addEventListener('input', function() {
+                    if (document.getElementById('mortgage-results').classList.contains('hidden') === false) {
+                        calculateMortgage();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
